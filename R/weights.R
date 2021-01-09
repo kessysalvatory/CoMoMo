@@ -301,7 +301,7 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
 
   models.exist <-  FALSE
   
-  if ( file.exists("models.rda")
+  if ( file.exists("models.rda"))
       
       { 
         models.exist <-  TRUE
