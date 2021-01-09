@@ -296,8 +296,21 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
     load("horizon.rda")
 
   }
+  
+  models.prev <- 0
 
-  if( file.exists("data.rda") && file.exists("data0.rda") && file.exists("naRows0.rda") && file.exists("CVerror.rda") && horizon.exist && h.prev == h) {
+  models.exist <-  FALSE
+  
+  if ( file.exists("models.rda")
+      
+      { 
+        models.exist <-  TRUE
+        
+        load("models.rda")
+        
+        }
+
+  if( file.exists("data.rda") && file.exists("data0.rda") && file.exists("naRows0.rda") && file.exists("CVerror.rda") && horizon.exist && h.prev == h && models.exist && length(models.prev) == length(models)) {
 
     # load data
 
@@ -399,6 +412,8 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
       save(h.prev, file = "horizon.rda")
 
       save(xtrain, file = "data.rda")
+      
+      save(models, file = "models.rda")
 
     }
 
