@@ -448,8 +448,10 @@ else if (max(weight$weights$h) < h)
   {
 
     # updates the weights here
+    
+    interval<- h-max(weight$weights$h)
 
-    weight$weights <- head(weight$weights, length(models)*h)
+    weight$weights <- head(weight$weights, length(models)*interval)
 
     pstack <- prediction%>%dplyr::left_join(weight$weights)%>%dplyr::mutate(forstack= log(rate)*weights)%>%dplyr::group_by(ages, year, h)%>%dplyr::summarise(stack = exp(sum(forstack)))%>%dplyr::ungroup()%>%
       tidyr::pivot_longer(cols = stack, values_to = "rate", names_to = "model")
