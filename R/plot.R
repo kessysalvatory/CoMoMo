@@ -1,4 +1,4 @@
-#'
+'
 #' @title Plot the weights from different model combination methods
 #'
 #' @param object an object containing the weights for different horizons.
@@ -75,6 +75,17 @@ plot.CoMoMo.stack <- function(object, ...) {
   return(wplot)
 
 }
+
+#' @export
+
+plot.CoMoMo.mcs <- function(object, ...) {
+
+  wplot  <- ggplot(object$mse) + geom_line(aes(x = h , y = mse, group = model, colour = model, linetype = model), size = 2) + theme(plot.title = element_text(hjust = 0.5)) + labs(x = "Forecasting Horizon", y = "MSE", title = "Mean Square Error by Forecasting Horizon")
+
+  return(wplot)
+
+}
+
 
 
 
