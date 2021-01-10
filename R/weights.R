@@ -1,4 +1,4 @@
- #' @title Weights estimation using different methods.
+#' @title Weights estimation using different methods.
 #'
 #' @description We consider four different model combination approaches:
 #'  Simple Model Averaging, Bayesian Model Averaging, Model Confidence Set,
