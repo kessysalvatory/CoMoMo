@@ -748,7 +748,13 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
 
   {
 
+
+
     if (metalearner=="Ridge"){
+
+      # names of specified models
+
+      Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
 
       ridge.model <- lapply(1:length(1:h), function(x) glmnet::glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 0))
 
@@ -772,6 +778,10 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
 
     else if (metalearner=="Lasso"){
 
+      # names of specified models
+
+      Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
+
       lasso.model <- lapply(1:length(1:h), function(x) glmnet::glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 1))
 
       cv_lasso <- lapply(1:length(1:h), function(x) glmnet::cv.glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 1))
@@ -794,6 +804,10 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
 
     else if (metalearner=="Elastic"){
 
+      # names of specified models
+
+      Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
+
       elastic.model <- lapply(1:length(1:h), function(x) glmnet::glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 0.5))
 
       cv_elnet <- lapply(1:length(1:h), function(x) glmnet::cv.glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 0.5))
@@ -815,6 +829,10 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
 
     else if(metalearner=="nnls") {
 
+      # names of specified models
+
+      Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
+
       coeffients <-lapply(1:length(1:h), function(x) nnls::nnls(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],])$x)
 
       weights_nnls <- lapply(1:length(1:h), function(x) as.matrix(coeffients[[x]]))
@@ -832,6 +850,10 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
     }
 
     else if (metalearner=="Linear"){
+
+      # names of specified models
+
+      Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
 
       linear.model <- lapply(1:length(1:h), function(x) lm(y~., data = data_train[[x]]))
 
