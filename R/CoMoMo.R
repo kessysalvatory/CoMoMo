@@ -6,6 +6,15 @@ fitCoMoMo <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NU
 
 {
 
+  # Check if more than one model is supplied
+
+  if(length(models)<2) stop("Argument models needs to contain more than one model.")
+
+  # check if the supplied models are different
+
+  if( length(unique(unname(models)))==1) stop("Models must be different.")
+
+
   # Check the forecast horizon
 
   if (h>0 && h!= as.integer(h)) stop("The forecast horizon h must be a positive integer.")
@@ -119,6 +128,15 @@ CoMoMo  <- function(weight, data = NULL,...) {
 
 CoMoMo.default <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, h = NULL) {
 
+
+  # Check if more than one model is supplied
+
+  if(length(models)<2) stop("Argument models needs to contain more than one model.")
+
+  # check if the supplied models are different
+
+  if( length(unique(unname(models)))==1) stop("Models must be different.")
+
   # Check the forecast horizon
 
   if (h>0 && h!= as.integer(h)) stop("The forecast horizon h must be a positive integer.")
@@ -188,6 +206,15 @@ CoMoMo.default <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit
 
 CoMoMo.bma <- function(models, data = NULL, weight = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, h = NULL) {
 
+  # Check if more than one model is supplied
+
+  if(length(models)<2) stop("Argument models needs to contain more than one model.")
+
+  # check if the supplied models are different
+
+  if( length(unique(unname(models)))==1) stop("Models must be different.")
+
+  # Check the forecast horizon
 
   # Check inputs
 
@@ -327,6 +354,15 @@ CoMoMo.bma <- function(models, data = NULL, weight = NULL, Dxt = NULL, Ext = NUL
 
 CoMoMo.stack <- function(models, data = NULL, weight = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, h = NULL) {
 
+
+  # Check if more than one model is supplied
+
+  if(length(models)<2) stop("Argument models needs to contain more than one model.")
+
+  # check if the supplied models are different
+
+  if( length(unique(unname(models)))==1) stop("Models must be different.")
+
   # Check inputs
 
   if (class(weight) != "stack") {
@@ -462,6 +498,13 @@ else if (max(weight$weights$h) < h)
 
 CoMoMo.mcs <- function(models, data = NULL, weight = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, h = NULL) {
 
+  # Check if more than one model is supplied
+
+  if(length(models)<2) stop("Argument models needs to contain more than one model.")
+
+  # check if the supplied models are different
+
+  if( length(unique(unname(models)))==1) stop("Models must be different.")
 
   # Check inputs
 
