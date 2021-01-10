@@ -980,7 +980,7 @@ mcs <- function(models,  method = "cv", data = NULL, Dxt = NULL, Ext = NULL, age
 
     forecasts <-valloss(models = models, data = data, ages.fit = ages.fit, years.fit = years.fit, holdout = holdout, h = h, Dxt = Dxt, Ext = Ext, ages = ages, years = years)$rates
 
-    modelforecasts <- bind_cols(lapply(1:length(forecasts), function(x) forecasts[[x]]["rate"]))
+    modelforecasts <- dplyr::bind_cols(lapply(1:length(forecasts), function(x) forecasts[[x]]["rate"]))
 
     colnames(modelforecasts) <- names(models)
 
