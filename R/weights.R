@@ -1006,7 +1006,7 @@ mcs <- function(models,  method = "cv", data = NULL, Dxt = NULL, Ext = NULL, age
 
     out <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights)), h), function(x) x%>%dplyr::mutate(model = modelNames)))%>%dplyr::mutate(h = rep(1:h, each = length(models))))[,c("h","weights","model")]
 
-    res <- list(weights = out,  selected =  selected)
+    res <- list(weights = out,  method = "sv", selected =  selected)
 
     class(res) <- "mcs"
 
