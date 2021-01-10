@@ -114,7 +114,7 @@ valloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL
 #' @export
 
 cvloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL,
-                 ages = NULL, years = NULL, h = NULL)
+                   ages = NULL, years = NULL, h = NULL)
 
 {
 
@@ -189,7 +189,7 @@ cvloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL,
 
 bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, holdout = round(length(years.fit)/3,0), h = NULL)
 
-  {
+{
 
   if (h>0 && h!= as.integer(h)) stop("The forecast horizon h must be a positive integer.")
 
@@ -207,27 +207,27 @@ bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages
 
   {
 
-  output0 <- cvloss(models = models, data = data, ages.fit = ages.fit, years.fit = years.fit, h = h, Dxt = Dxt, Ext = Ext, ages = ages, years = years)
+    output0 <- cvloss(models = models, data = data, ages.fit = ages.fit, years.fit = years.fit, h = h, Dxt = Dxt, Ext = Ext, ages = ages, years = years)
 
-  weights_bma<-  lapply(1:length(1:h), function(x) data.frame(h = x, weights = exp(-0.5*dplyr::bind_rows(output0$cvmse[[x]]))/sum(exp(-0.5*dplyr::bind_rows(output0$cvmse[[x]])))))
+    weights_bma<-  lapply(1:length(1:h), function(x) data.frame(h = x, weights = exp(-0.5*dplyr::bind_rows(output0$cvmse[[x]]))/sum(exp(-0.5*dplyr::bind_rows(output0$cvmse[[x]])))))
 
-  out <- dplyr::bind_rows(lapply(weights_bma, function(x) x %>%dplyr::mutate(model = unlist(Specified_Models))))
+    out <- dplyr::bind_rows(lapply(weights_bma, function(x) x %>%dplyr::mutate(model = unlist(Specified_Models))))
 
-  output <- out%>%dplyr::rename(weights = cv.mse)
+    output <- out%>%dplyr::rename(weights = cv.mse)
 
-  result <- list(weights = output, method = "cv", cvmse =  output0$CVE)
+    result <- list(weights = output, method = "cv", cvmse =  output0$CVE)
 
-  class(result) <- "bma"
+    class(result) <- "bma"
 
-  return(result)
-    }
+    return(result)
+  }
 
 
   else if (method == "sv")
 
   {
 
-  # names of specified models
+    # names of specified models
 
     Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
 
@@ -281,7 +281,7 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
 
 {
 
-  # check if xtrain and ytrain exist?
+  # check if xtrain and ytrain exist
 
   h.prev <- 0
 
@@ -289,28 +289,138 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
 
   if ( file.exists("horizon.rda"))
 
-    {
+  {
 
     horizon.exist <- TRUE
 
     load("horizon.rda")
 
   }
-  
-  models.prev <- 0
 
-  models.exist <-  FALSE
-  
-  if ( file.exists("models.rda"))
-      
-      { 
-        models.exist <-  TRUE
-        
-        load("models.rda")
-        
-        }
+  ageLength <- 0
 
-  if( file.exists("data.rda") && file.exists("data0.rda") && file.exists("naRows0.rda") && file.exists("CVerror.rda") && horizon.exist && h.prev == h && models.exist && length(models.prev) == length(models)) {
+  ageLength.exist <-  FALSE
+
+  if ( file.exists("ageLength.rda"))
+
+  {
+    ageLength.exist <-  TRUE
+
+    load("ageLength.rda")
+
+  }
+
+  yearLength <- 0
+
+  yearLength.exist <-  FALSE
+
+  if ( file.exists("yearLength.rda"))
+
+  {
+    yearLength.exist <-  TRUE
+
+    load("yearLength.rda")
+
+  }
+
+  Dxtlength <- 0
+
+  Dxtlength.exist <-  FALSE
+
+  if ( file.exists("Dxtlength.rda"))
+
+  {
+    Dxtlength.exist <-  TRUE
+
+    load("Dxtlength.rda")
+
+  }
+
+  Extlength <- 0
+
+  Extlength.exist <-  FALSE
+
+  if ( file.exists("Extlength.rda"))
+
+  {
+    Extlength.exist <-  TRUE
+
+    load("Extlength.rda")
+
+  }
+
+
+  agesLength <- 0
+
+  agesLength.exist <-  FALSE
+
+  if ( file.exists("agesLength.rda"))
+
+  {
+    agesLength.exist <-  TRUE
+
+    load("agesLength.rda")
+
+  }
+
+  yearsLength <- 0
+
+  yearsLength.exist <-  FALSE
+
+  if ( file.exists("yearsLength.rda"))
+
+  {
+    yearsLength.exist <-  TRUE
+
+    load("yearsLength.rda")
+
+  }
+
+  Datalabel <- 0
+
+  Datalabel.exist <-  FALSE
+
+  if ( file.exists("Datalabel.rda"))
+
+  {
+    Datalabel.exist <-  TRUE
+
+    load("Datalabel.rda")
+
+  }
+
+  Dataseries <- 0
+
+  Dataseries.exist <-  FALSE
+
+  if ( file.exists("Dataseries.rda"))
+
+  {
+    Dataseries.exist <-  TRUE
+
+    load("Dataseries.rda")
+
+  }
+
+  prevModels <- 0
+
+  prevModels.exist <-  FALSE
+
+  if ( file.exists("prevModels.rda"))
+
+  {
+    prevModels.exist <-  TRUE
+
+    load("prevModels.rda")
+
+  }
+
+  int <- intersect(prevModels, models)
+
+  if( file.exists("data.rda") && file.exists("data0.rda") && file.exists("naRows0.rda") && file.exists("CVerror.rda") && horizon.exist && h.prev == h && ageLength.exist && yearLength.exist
+
+      && yearLength == length(years.fit) && ageLength == length(ages.fit) && Datalabel.exist && Datalabel == data$label && Dataseries.exist && Dataseries == data$series && Dxtlength.exist && Dxtlength == length(data$Dxt) && Extlength.exist&&
+      Extlength == length(data$Ext) &&  yearsLength.exist &&  agesLength == length(data$ages) && yearsLength == length(data$years) && agesLength.exist && prevModels.exist && length(int) == length(models) &&  length(int) == length(prevModels)) {
 
     # load data
 
@@ -330,6 +440,24 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
     if (h>0 && h!= as.integer(h)) stop("The forecast horizon h must be a positive integer.")
 
     h.prev <- h
+
+    prevModels <- models
+
+    ageLength <- length(ages.fit)
+
+    yearLength <- length(years.fit)
+
+    Datalabel <- data$label
+
+    Dataseries <- data$series
+
+    Dxtlength <- length(data$Dxt)
+
+    Extlength <- length(data$Ext)
+
+    agesLength <- length(data$ages)
+
+    yearsLength <- length(data$years)
 
     # checking the horizons that weights can be generated
 
@@ -412,14 +540,32 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
       save(h.prev, file = "horizon.rda")
 
       save(xtrain, file = "data.rda")
-      
-      save(models, file = "models.rda")
+
+      save(ageLength, file = "ageLength.rda")
+
+      save(yearLength, file = "yearLength.rda")
+
+      save(Datalabel, file = "Datalabel.rda")
+
+      save(Dataseries, file = "Dataseries.rda")
+
+      save(Extlength, file = "Extlength.rda")
+
+      save(Dxtlength, file = "Dxtlength.rda")
+
+      save(agesLength, file = "agesLength.rda")
+
+      save(yearsLength, file = "yearsLength.rda")
+
+      save(prevModels, file = "prevModels.rda")
 
     }
 
     else if (!saveMetadata)
 
     {
+
+      if (file.exists("prevModels.rda")) file.remove("prevModels.rda")
 
       if (file.exists("data.rda")) file.remove("data.rda")
 
@@ -429,6 +575,23 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
 
       if (file.exists("CVerror.rda")) file.remove("CVerror.rda")
 
+      if (file.exists("horizon.rda")) file.remove("horizon.rda")
+
+      if (file.exists("Dxtlength.rda")) file.remove("Dxtlength.rda")
+
+      if (file.exists("Extlength.rda")) file.remove("Extlength.rda")
+
+      if (file.exists("ageLength.rda")) file.remove("ageLength.rda")
+
+      if (file.exists("yearLength.rda")) file.remove("yearLength.rda")
+
+      if (file.exists("Datalabel.rda")) file.remove("Datalabel.rda")
+
+      if (file.exists("Dataseries.rda")) file.remove("Dataseries.rda")
+
+      if (file.exists("yearsLength.rda")) file.remove("yearsLength.rda")
+
+      if (file.exists("agesLength.rda")) file.remove("agesLength.rda")
 
     }
 
@@ -438,140 +601,140 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
 
   if (normalize)
 
-{  # learning weights using ridge regression
+  {  # learning weights using ridge regression
 
-  if (metalearner=="Ridge"){
+    if (metalearner=="Ridge"){
 
-    Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
+      Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
 
-    ridge.model <- lapply(1:length(1:h), function(x) glmnet::glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 0))
+      ridge.model <- lapply(1:length(1:h), function(x) glmnet::glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 0))
 
-    cv_ridge <- lapply(1:length(1:h), function(x) glmnet::cv.glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 0))
+      cv_ridge <- lapply(1:length(1:h), function(x) glmnet::cv.glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 0))
 
-    coeffients <- lapply(1:length(1:h), function(x) coef(ridge.model[[x]], s = cv_ridge[[x]]$lambda.min)[-1])
+      coeffients <- lapply(1:length(1:h), function(x) coef(ridge.model[[x]], s = cv_ridge[[x]]$lambda.min)[-1])
 
-    weights_ridge <- lapply(1:length(1:h), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
+      weights_ridge <- lapply(1:length(1:h), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
 
-    weights1_ridge <-  lapply(1:length(1:h), function(x) data.frame(h = x, weights = weights_ridge[[x]]))
+      weights1_ridge <-  lapply(1:length(1:h), function(x) data.frame(h = x, weights = weights_ridge[[x]]))
 
-    weightsDF_ridge <- dplyr::bind_rows(lapply(weights1_ridge, function(x) x %>%dplyr::mutate(model = unlist(Specified_Models))))
+      weightsDF_ridge <- dplyr::bind_rows(lapply(weights1_ridge, function(x) x %>%dplyr::mutate(model = unlist(Specified_Models))))
 
-    result <- list(weights =  weightsDF_ridge, metalearner = "Ridge", cvmse =  CVerror)
+      result <- list(weights =  weightsDF_ridge, metalearner = "Ridge", cvmse =  CVerror)
 
-    class(result) <- "stack"
+      class(result) <- "stack"
 
-    return(result)
+      return(result)
 
-  }
+    }
 
     # learning weights using lasso regression
 
-  else if (metalearner=="Lasso"){
+    else if (metalearner=="Lasso"){
 
-    Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
+      Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
 
-    lasso.model <- lapply(1:length(1:h), function(x) glmnet::glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 1))
+      lasso.model <- lapply(1:length(1:h), function(x) glmnet::glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 1))
 
-    cv_lasso <- lapply(1:length(1:h), function(x) glmnet::cv.glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 1))
+      cv_lasso <- lapply(1:length(1:h), function(x) glmnet::cv.glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 1))
 
-    coeffients <- lapply(1:length(1:h), function(x) coef(lasso.model[[x]], s = cv_lasso[[x]]$lambda.min)[-1])
+      coeffients <- lapply(1:length(1:h), function(x) coef(lasso.model[[x]], s = cv_lasso[[x]]$lambda.min)[-1])
 
-    weights_lasso <- lapply(1:length(1:h), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
+      weights_lasso <- lapply(1:length(1:h), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
 
-    weights1_lasso <-  lapply(1:length(1:h), function(x) data.frame(h = x, weights = weights_lasso[[x]]))
+      weights1_lasso <-  lapply(1:length(1:h), function(x) data.frame(h = x, weights = weights_lasso[[x]]))
 
-    weightsDF_lasso <- dplyr::bind_rows(lapply(weights1_lasso, function(x) x %>% dplyr::mutate(model = unlist(Specified_Models))))
+      weightsDF_lasso <- dplyr::bind_rows(lapply(weights1_lasso, function(x) x %>% dplyr::mutate(model = unlist(Specified_Models))))
 
-    result <- list(weights =  weightsDF_lasso, metalearner = "Lasso", cvmse =  CVerror)
+      result <- list(weights =  weightsDF_lasso, metalearner = "Lasso", cvmse =  CVerror)
 
-    class(result) <- "stack"
+      class(result) <- "stack"
 
-    return(result)
+      return(result)
 
-  }
+    }
 
     # learning weights using elastic net regression
 
-  else if (metalearner=="Elastic"){
+    else if (metalearner=="Elastic"){
 
-    Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
+      Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
 
-    elastic.model <- lapply(1:length(1:h), function(x) glmnet::glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 0.5))
+      elastic.model <- lapply(1:length(1:h), function(x) glmnet::glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 0.5))
 
-    cv_elnet <- lapply(1:length(1:h), function(x) glmnet::cv.glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 0.5))
+      cv_elnet <- lapply(1:length(1:h), function(x) glmnet::cv.glmnet(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],], alpha = 0.5))
 
-    coeffients <- lapply(1:length(1:h), function(x) coef(elastic.model[[x]], s = cv_elnet[[x]]$lambda.min)[-1])
+      coeffients <- lapply(1:length(1:h), function(x) coef(elastic.model[[x]], s = cv_elnet[[x]]$lambda.min)[-1])
 
-    weights_elastic <- lapply(1:length(1:h), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
+      weights_elastic <- lapply(1:length(1:h), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
 
-    weights1_elastic <-  lapply(1:length(1:h), function(x) data.frame(h = x, weights = weights_elastic[[x]]))
+      weights1_elastic <-  lapply(1:length(1:h), function(x) data.frame(h = x, weights = weights_elastic[[x]]))
 
-    weightsDF_elastic <- dplyr::bind_rows(lapply(weights1_elastic, function(x) x %>% dplyr::mutate(model = unlist(Specified_Models))))
+      weightsDF_elastic <- dplyr::bind_rows(lapply(weights1_elastic, function(x) x %>% dplyr::mutate(model = unlist(Specified_Models))))
 
-    result <- list(weights =  weightsDF_elastic, metalearner = "Elastic",  cvmse =  CVerror)
+      result <- list(weights =  weightsDF_elastic, metalearner = "Elastic",  cvmse =  CVerror)
 
-    class(result) <- "stack"
+      class(result) <- "stack"
 
-    return(result)
+      return(result)
 
-  }
+    }
 
-   # learning weights using non-negative least square regression
+    # learning weights using non-negative least square regression
 
-  else if(metalearner=="nnls") {
+    else if(metalearner=="nnls") {
 
-    Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
+      Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
 
-    coeffients <-lapply(1:length(1:h), function(x) nnls::nnls(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],])$x)
+      coeffients <-lapply(1:length(1:h), function(x) nnls::nnls(xtrain[[x]][-naRows[[x]],], ytrain[[x]][[1]][-naRows[[x]],])$x)
 
-    weights_nnls <- lapply(1:length(1:h), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
+      weights_nnls <- lapply(1:length(1:h), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
 
-    weights1_nnls <-  lapply(1:length(1:h), function(x) data.frame(h = x, weights = weights_nnls[[x]]))
+      weights1_nnls <-  lapply(1:length(1:h), function(x) data.frame(h = x, weights = weights_nnls[[x]]))
 
-    weightsDF_nnls <- dplyr::bind_rows(lapply(weights1_nnls, function(x) x %>% dplyr::mutate(model = unlist(Specified_Models))))
+      weightsDF_nnls <- dplyr::bind_rows(lapply(weights1_nnls, function(x) x %>% dplyr::mutate(model = unlist(Specified_Models))))
 
-    result <- list(weights = weightsDF_nnls, metalearner = "nnls", cvmse =  CVerror)
+      result <- list(weights = weightsDF_nnls, metalearner = "nnls", cvmse =  CVerror)
 
-    class(result) <- "stack"
+      class(result) <- "stack"
 
-    return(result)
+      return(result)
 
-  }
+    }
 
     # learning weights using linear squared regression
 
-  else if (metalearner=="Linear"){
+    else if (metalearner=="Linear"){
 
-    Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
+      Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
 
-    y <- lapply(1:length(1:h), function(x) lapply(1:length(models), function(m) ytrain[[x]][[m]][-naRows[[x]],]))
+      y <- lapply(1:length(1:h), function(x) lapply(1:length(models), function(m) ytrain[[x]][[m]][-naRows[[x]],]))
 
 
-    data_train <- lapply(1:length(1:h), function(x) data.frame(y = y[[x]][[1]], xtrain[[x]][-naRows[[x]],]))
+      data_train <- lapply(1:length(1:h), function(x) data.frame(y = y[[x]][[1]], xtrain[[x]][-naRows[[x]],]))
 
-   linear.model <- lapply(1:length(1:h), function(x) lm(y~., data = data_train[[x]]))
+      linear.model <- lapply(1:length(1:h), function(x) lm(y~., data = data_train[[x]]))
 
-    coeffients <- lapply(1:length(1:h), function(x) coef(linear.model[[x]])[-1])
+      coeffients <- lapply(1:length(1:h), function(x) coef(linear.model[[x]])[-1])
 
-    weights_linear <- lapply(1:length(1:h), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
+      weights_linear <- lapply(1:length(1:h), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
 
-    weights1_linear <- lapply(1:length(1:h), function(x) data.frame(h = x, weights = weights_linear[[x]]))
+      weights1_linear <- lapply(1:length(1:h), function(x) data.frame(h = x, weights = weights_linear[[x]]))
 
-    weightsDF_linear <- dplyr::bind_rows(lapply(weights1_linear, function(x) x %>% dplyr::mutate(model = unlist(Specified_Models))))
+      weightsDF_linear <- dplyr::bind_rows(lapply(weights1_linear, function(x) x %>% dplyr::mutate(model = unlist(Specified_Models))))
 
-    result <- list(weights = weightsDF_linear,  metalearner = "Linear",  cvmse =  CVerror)
+      result <- list(weights = weightsDF_linear,  metalearner = "Linear",  cvmse =  CVerror)
 
-    class(result) <- "stack"
+      class(result) <- "stack"
 
-    return(result)
+      return(result)
 
-  }
+    }
 
   }
 
   else if (!normalize)
 
-{
+  {
 
     if (metalearner=="Ridge"){
 
@@ -763,9 +926,9 @@ mcs <- function(models,  method = "cv", data = NULL, Dxt = NULL, Ext = NULL, age
 
   modelNames <- names(models)
 
- if (method!="cv" && method!="sv") stop("This is undefined method")
+  if (method!="cv" && method!="sv") stop("This is undefined method")
 
-if (method == "sv")
+  if (method == "sv")
 
   {
     # loss
@@ -794,19 +957,19 @@ if (method == "sv")
     weights <- c()
 
     for (model in modelNames) {
-    if (model %in% modelNames[selected]) {weights = c(weights, 1/length(modelNames[selected])) } else {weights = c(weights, 0)}
+      if (model %in% modelNames[selected]) {weights = c(weights, 1/length(modelNames[selected])) } else {weights = c(weights, 0)}
 
     }
 
-   out <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights)), h), function(x) x%>%dplyr::mutate(model = modelNames)))%>%dplyr::mutate(h = rep(1:h, each = length(models))))[,c("h","weights","model")]
+    out <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights)), h), function(x) x%>%dplyr::mutate(model = modelNames)))%>%dplyr::mutate(h = rep(1:h, each = length(models))))[,c("h","weights","model")]
 
-   res <- list(weights = out,  selected =  selected)
+    res <- list(weights = out,  selected =  selected)
 
-   class(res) <- "mcs"
+    class(res) <- "mcs"
 
-   return(res)
+    return(res)
 
-}
+  }
 
   else if ( method=="cv")
 
