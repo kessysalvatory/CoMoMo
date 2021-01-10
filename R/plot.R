@@ -1,4 +1,4 @@
-'
+#'
 #' @title Plot the weights from different model combination methods
 #'
 #' @param object an object containing the weights for different horizons.
@@ -85,6 +85,11 @@ plot.CoMoMo.mcs <- function(object, ...) {
   return(wplot)
 
 }
+
+
+
+
+
 
 
 
