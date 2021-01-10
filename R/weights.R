@@ -191,6 +191,14 @@ bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages
 
 {
 
+  # Check if more than one model is supplied
+
+  if(length(models)<2) stop("Argument models needs to contain more than one model.")
+
+  # check if the supplied models are different
+
+  if( length(unique(unname(models)))==1) stop("Models must be different.")
+
   if (h>0 && h!= as.integer(h)) stop("The forecast horizon h must be a positive integer.")
 
   Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
@@ -468,6 +476,10 @@ stack <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, 
     # Check if more than one model is supplied
 
     if(length(models)<2) stop("Argument models needs to contain more than one model.")
+
+    # check if the supplied models are different
+
+    if( length(unique(unname(models)))==1) stop("Models must be different.")
 
     # Determine fitting ages and years are specified
 
@@ -912,6 +924,17 @@ mcs <- function(models,  method = "cv", data = NULL, Dxt = NULL, Ext = NULL, age
                 ages = NULL, years = NULL, h = NULL, B = 5000, l = 3, alpha = 0.1, holdout = round(length(years.fit)/3,0))
 
 {
+
+  # Check if more than one model is supplied
+
+  if(length(models)<2) stop("Argument models needs to contain more than one model.")
+
+  # check if the supplied models are different
+
+  if( length(unique(unname(models)))==1) stop("Models must be different.")
+
+  # Check the forecast horizon
+
   if (h>0 && h!= as.integer(h)) stop("The forecast horizon h must be a positive integer.")
 
   if ( holdout < round(length(years.fit)/3,0))
