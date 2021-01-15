@@ -184,13 +184,13 @@ CoMoMo.weight <- function(models, data = NULL, weight = NULL, Dxt = NULL, Ext = 
  {
    # updates the weights here when having weights for fewer horizons
 
-   start.horizon <- max(weights$model.weights$h)
+   start.horizon <- max(weight$weights$h)
 
    interval<- h - start.horizon
 
-   weightsDF <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(tail(weights$model.weights, length(models)))), interval), function(x) x%>%dplyr::mutate(model = names(models))))%>%dplyr::mutate(h = rep(1:interval + start.horizon, each=length(models))))[, c("h","model.weights","model")]
+   weightsDF <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(tail(weight$weights, length(models)))), interval), function(x) x%>%dplyr::mutate(model = names(models))))%>%dplyr::mutate(h = rep(1:interval + start.horizon, each=length(models))))[, c("h","model.weights","model")]
 
-   weightsDFall <- rbind(weights$model.weights, weightsDF)
+   weightsDFall <- rbind(weight$weights, weightsDF)
 
    weight$weights <- weightsDFall
 
