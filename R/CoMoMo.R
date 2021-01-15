@@ -138,7 +138,7 @@ CoMoMo.default <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit
 
   mseDF <- allForecast%>%dplyr::mutate(err2 = (log(rate) - log(obsrate))^2)%>%dplyr::group_by(h, model)%>%dplyr::summarise(mse = mean(err2, na.rm = TRUE))%>%dplyr::ungroup()
 
-  output <-list(comb.rates = na.omit(simple), single.rates = prediction, comb.method = "simple", mse = na.omit(mseDF))
+  output <-list(comb.rates = na.omit(simple), model.rates = prediction, comb.method = "simple", mse = na.omit(mseDF))
 
   class(output) <- "CoMoMo.default"
 
