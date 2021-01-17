@@ -50,7 +50,7 @@
 
 #' @export
 
-valloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, holdout = NULL, h = NULL, verbose = FALSE)
+valloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, holdout = NULL, h = NULL)
 
 {
   # Check the forecast horizon
@@ -265,7 +265,7 @@ cvloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL,
 #'
 #' @export
 
-bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, holdout = round(length(years.fit)/3,0), h = NULL, verbose = FALSE)
+bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, holdout = round(length(years.fit)/3,0), h = NULL)
 
 {
 
