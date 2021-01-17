@@ -21,17 +21,6 @@ plot.weight <- function(object, size = 2, ...) {
 }
 
 
-#' @export
-
-plot.CoMoMo.weight <- function(object, ...) {
-
-
-  wplot  <- ggplot2::ggplot( object$mse) + ggplot2::geom_line(aes(x = h , y = mse, group = model, colour = model, linetype = model), size = 2) + ggplot2::theme(plot.title = element_text(hjust = 0.5)) + ggplot2::labs(x = "Forecasting Horizon", y = "MSE", title = "Mean Square Error by Forecasting Horizon")
-
-  return(wplot)
-
-}
-
 
 
 
