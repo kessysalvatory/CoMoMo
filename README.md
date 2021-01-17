@@ -111,3 +111,6 @@ final <- CoMoMo(modlist, weight = bmw, data = DataStMoMo, ages.fit = agesFit,yea
 final <- CoMoMo(modlist, weight = mcss, data = DataStMoMo, ages.fit = agesFit,years.fit = yearsFit, h = 5)
 ```
 
+## Questions 
+
+Feel 
