@@ -142,10 +142,8 @@ CoMoMo.weight <- function(models, data = NULL, weight = NULL, Dxt = NULL, Ext = 
     mortfor <- prediction%>%dplyr::left_join(weight$weights)%>%dplyr::mutate(forrates = log(rate)*model.weights)%>%dplyr::group_by(ages, year, h)%>%dplyr::summarise(comb = exp(sum(forrates)))%>%dplyr::ungroup()%>%
       tidyr::pivot_longer(cols = comb, values_to = "rate", names_to = "model")
 
- 
     output <-list(comb.rates = na.omit(mortfor), model.rates = prediction, comb.method = weight$comb.method)
-
-  
+ 
     return(output)
 
   }
@@ -168,16 +166,7 @@ CoMoMo.weight <- function(models, data = NULL, weight = NULL, Dxt = NULL, Ext = 
     mortfor <- prediction%>%dplyr::left_join(weight$weights)%>%dplyr::mutate(forrates = log(rate)*model.weights)%>%dplyr::group_by(ages, year, h)%>%dplyr::summarise(comb = exp(sum(forrates)))%>%dplyr::ungroup()%>%
       tidyr::pivot_longer(cols = comb, values_to = "rate", names_to = "model")
 
-    allForecast_one <- dplyr::bind_rows(prediction, mortfor)
-
-    # observed rates
-
-    obsRatesDF <- tidyr::pivot_longer(dplyr::bind_cols(ages = data$ages, as.data.frame(data$Dxt/data$Ext)),cols = 2:(length(data$years)+1),
-                                      names_to = "year", values_to = "obsrate")%>%dplyr::mutate(year = as.numeric(year))
-
-    
     output <-list(comb.rates = na.omit(mortfor), model.rates = prediction, comb.method = weight$comb.method)
-
 
     return(output)
 
@@ -195,10 +184,8 @@ CoMoMo.weight <- function(models, data = NULL, weight = NULL, Dxt = NULL, Ext = 
     mortfor <- prediction%>%dplyr::left_join(weight$weights)%>%dplyr::mutate(forrates = log(rate)*model.weights)%>%dplyr::group_by(ages, year, h)%>%dplyr::summarise(comb = exp(sum(forrates)))%>%dplyr::ungroup()%>%
       tidyr::pivot_longer(cols = comb, values_to = "rate", names_to = "model")
 
-    
     output <-list(comb.rates = na.omit(mortfor), model.rates = prediction, comb.method = weight$comb.method)
 
- 
     return(output)
 
   }
