@@ -17,12 +17,12 @@ devtools::install_github("amvillegas/StMoMo", ref = "GroupLasso")
 The easiest way to install CoMoMo is using the devtools package:
 
 ``` r
-devtools::install_github(""kessysalvatory/CoMoMo"")
+devtools::install_github("kessysalvatory/CoMoMo")
 ```
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example which shows you how to combine forecasts from multiple mortality models:
 
 ``` r
 library(demography)
@@ -32,6 +32,8 @@ library(tibble)
 library(ggplot2)
 library(patchwork)
 
+# Getting some data
+
 MorData <- hmd.mx(country = 'GBRTENW',username = "salvatory@aims.ac.tz", password = "Salva=0606")
 DataStMoMo <- StMoMoData(MorData, "male")
 
@@ -39,6 +41,7 @@ agesFit <- 50:89
 yearsFit <- 1960:1990
 nAg <- length(agesFit); nYr <- length(yearsFit)
 
+# Choosing which models to fit
 # Define the models
 
 LC <- lc()
@@ -83,32 +86,47 @@ modlist <- model(models, modelNames)
 
 # Compute the weights
 # use the stacked regression ensemble (stack) with nnls as a metalearner 
+# h is the forecasting horizon
+# First, we train the models via cv to produce the forecasts
+# Then, we use the forecasts to calculate model weights.
 
-stacked <- stack(modlist, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 5, metalearner = "nnls")
+weight_stack <- stack(models = modlist, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, 
+h = 5, metalearner = "nnls")
+
 plot(stacked)
 
 # use the Bayesian model averaging (bma) to estimate the weights
+# Cross-validation is used to calculate the cross-validation mean squared errors 
 
-bmw <- bma(modlist, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 5, method = "cv")
+
+weight_bma <- bma(models = modlist, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, 
+h = 5, method = "cv")
+
 plot(bmw)
 
 # use the Model Confidence Set (mcs) to choose the models to combine
+# Models are chosen via cross-validation
+# Models are chosen for each horizon
 
-mcss <- mcs(modlist, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 5, B = 5000, l=3, alpha = 0.1,  method = "cv")
+weight_mcs <- mcs(models = modlist, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 5, 
+B = 5000, l=3, alpha = 0.1,  method = "cv")
 
 
 # combined forecasts
 # stack
 
-final <- CoMoMo(modlist, weight = stacked, data = DataStMoMo, ages.fit = agesFit,years.fit = yearsFit, h = 5)
+final <- CoMoMo(models = modlist, weight = weight_stack, data = DataStMoMo, ages.fit = agesFit,
+years.fit = yearsFit, h = 5)
 
 # Bayesian
 
-final <- CoMoMo(modlist, weight = bmw, data = DataStMoMo, ages.fit = agesFit,years.fit = yearsFit, h = 5)
+final <- CoMoMo(models = modlist, weight = weight_bma, data = DataStMoMo, ages.fit = agesFit,
+years.fit = yearsFit, h = 5)
 
 # mcs
 
-final <- CoMoMo(modlist, weight = mcss, data = DataStMoMo, ages.fit = agesFit,years.fit = yearsFit, h = 5)
+final <- CoMoMo(models = modlist, weight = weight_mcs, data = DataStMoMo, ages.fit = agesFit,
+years.fit = yearsFit, h = 5)
 ```
 
 ## Questions 
