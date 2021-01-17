@@ -52,12 +52,12 @@ fitCoMoMo <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NU
 
   {
 
-    fitModels <-  lapply(year.eval:year.max, function(yearval) lapply(models, function(x) StMoMo::fit(x, data = data, ages.fit = ages.fit, years.fit = years.fit[1]:yearval)))
+    fitModels <-  lapply(year.eval:year.max, function(yearval) lapply(models, function(x) StMoMo::fit(x, Dxt = Dxt, Ext = Ext, ages = ages, years = years, data = data, ages.fit = ages.fit, years.fit = years.fit[1]:yearval)))
 
     forModels <-  lapply(1:h, function(s) lapply(1:length(models), function(x) forecast(fitModels[[s]][[x]], h = length(h:s))))
 
     forRates <-  lapply(1:h, function(i) lapply(forModels[[i]], function(x) {tidyr::pivot_longer(dplyr::bind_cols(ages = ages.fit, as.data.frame(x$rates)),
-                                                                                                 cols = 2:(length(h:i) + 1), names_to = "year", values_to = "rate")%>%dplyr::mutate(year = as.numeric(year), h = year - min(year) + 1)}))
+                 cols = 2:(length(h:i) + 1), names_to = "year", values_to = "rate")%>%dplyr::mutate(year = as.numeric(year), h = year - min(year) + 1)}))
 
     output <- dplyr::bind_rows(lapply(1:h, function(k) lapply(1:length(forRates[[k]]), function(x) dplyr::mutate(forRates[[k]][[x]], model = Specified_Models[[x]]))))
 
@@ -71,7 +71,8 @@ fitCoMoMo <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NU
 
   {
 
-    fitModels <-  lapply(year.eval:max(data$years), function(yearval) lapply(models, function(x) StMoMo::fit(x, data = data, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, ages.fit = ages.fit, years.fit = years.fit[1]:yearval)))
+    fitModels <-  lapply(year.eval:max(data$years), function(yearval) lapply(models, function(x) StMoMo::fit(x, data = data,
+                         Dxt = Dxt, Ext = Ext, ages = ages, years = years, ages.fit = ages.fit, years.fit = years.fit[1]:yearval)))
 
     finalmodel <- c(fitModels, rep(tail(fitModels, n = 1),  year.max - max(data$years)))
 
@@ -120,7 +121,7 @@ CoMoMo  <- function(weight, data = NULL,...) {
 
 CoMoMo.default <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, h = NULL) {
 
-  prediction <- fitCoMoMo(models = models,  Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, data = data, ages.fit = ages.fit, years.fit = years.fit, h = h)
+  prediction <- fitCoMoMo(models = models, Dxt = Dxt, Ext = Ext, ages = ages, years = years, data = data, ages.fit = ages.fit, years.fit = years.fit, h = h)
 
   simple <- prediction%>%dplyr::group_by(ages, year, h)%>%dplyr::summarise(average = exp(mean(log(rate))))%>%dplyr::ungroup()%>%
     tidyr::pivot_longer(cols = average, values_to = "rate", names_to = "model")
@@ -134,7 +135,7 @@ CoMoMo.default <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit
 
 CoMoMo.weight <- function(models, data = NULL, weight = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, h = NULL) {
 
-  prediction <- fitCoMoMo(models = models,Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, data = data, ages.fit = ages.fit, years.fit = years.fit, h = h)
+  prediction <- fitCoMoMo(models = models, Dxt = Dxt, Ext = Ext, ages = ages, years = years, data = data, ages.fit = ages.fit, years.fit = years.fit, h = h)
 
   if (max(weight$weights$h)==h)
 
