@@ -265,7 +265,7 @@ cvloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL,
 #'
 #' @export
 
-bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, holdout = round(length(years.fit)/3,0), h = NULL)
+bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, holdout = round(length(years.fit)/3,0), h = NULL, verbose = FALSE)
 
 {
 
