@@ -175,15 +175,9 @@ CoMoMo.weight <- function(models, data = NULL, weight = NULL, Dxt = NULL, Ext = 
     obsRatesDF <- tidyr::pivot_longer(dplyr::bind_cols(ages = data$ages, as.data.frame(data$Dxt/data$Ext)),cols = 2:(length(data$years)+1),
                                       names_to = "year", values_to = "obsrate")%>%dplyr::mutate(year = as.numeric(year))
 
-    allForecast <- dplyr::left_join(allForecast_one, obsRatesDF)
+    
+    output <-list(comb.rates = na.omit(mortfor), model.rates = prediction, comb.method = weight$comb.method)
 
-    # compute errors
-
-    mseDF <- allForecast%>%dplyr::mutate(err2 = (log(rate) - log(obsrate))^2)%>%dplyr::group_by(h, model)%>%dplyr::summarise(mse = mean(err2, na.rm = TRUE))%>%dplyr::ungroup()
-
-    output <-list(comb.rates = na.omit(mortfor), model.rates = prediction, comb.method = weight$comb.method, mse = na.omit(mseDF))
-
-    class(output) <- "CoMoMo.weight"
 
     return(output)
 
@@ -201,23 +195,10 @@ CoMoMo.weight <- function(models, data = NULL, weight = NULL, Dxt = NULL, Ext = 
     mortfor <- prediction%>%dplyr::left_join(weight$weights)%>%dplyr::mutate(forrates = log(rate)*model.weights)%>%dplyr::group_by(ages, year, h)%>%dplyr::summarise(comb = exp(sum(forrates)))%>%dplyr::ungroup()%>%
       tidyr::pivot_longer(cols = comb, values_to = "rate", names_to = "model")
 
-    allForecast_one <- dplyr::bind_rows(prediction,  mortfor)
+    
+    output <-list(comb.rates = na.omit(mortfor), model.rates = prediction, comb.method = weight$comb.method)
 
-    # observed rates
-
-    obsRatesDF <- tidyr::pivot_longer(dplyr::bind_cols(ages = data$ages, as.data.frame(data$Dxt/data$Ext)),cols = 2:(length(data$years)+1),
-                                      names_to = "year", values_to = "obsrate")%>%dplyr::mutate(year = as.numeric(year))
-
-    allForecast <- dplyr::left_join(allForecast_one, obsRatesDF)
-
-    # compute errors
-
-    mseDF <- allForecast%>%dplyr::mutate(err2 = (log(rate) - log(obsrate))^2)%>%dplyr::group_by(h, model)%>%dplyr::summarise(mse = mean(err2, na.rm = TRUE))%>%dplyr::ungroup()
-
-    output <-list(comb.rates = na.omit(mortfor), model.rates = prediction, comb.method = weight$comb.method, mse = na.omit(mseDF))
-
-    class(output) <- "CoMoMo.weight"
-
+ 
     return(output)
 
   }
