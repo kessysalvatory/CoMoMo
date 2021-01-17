@@ -113,4 +113,5 @@ final <- CoMoMo(modlist, weight = mcss, data = DataStMoMo, ages.fit = agesFit,ye
 
 ## Questions 
 
-Feel 
+
+Please feel free to open an issue with any questions you may have. You can contact me at s.kessy@unsw.edu.au
