@@ -34,7 +34,7 @@ library(patchwork)
 
 # Getting some data
 
-MorData <- hmd.mx(country = 'GBRTENW',username = "salvatory@aims.ac.tz", password = "Salva=0606")
+MorData <- hmd.mx(country = 'GBRTENW',username = "your email", password = "your password")
 DataStMoMo <- StMoMoData(MorData, "male")
 
 agesFit <- 50:89
@@ -154,7 +154,7 @@ comb_mcs <- CoMoMo(modelFits, weight = mcs_weight_cv, h = 15)
 # when forecasting for h>15, the last horizon weights will be used for combining.
 # when h = 50, the weight when h =15 is used to combine 
 
-comb_stack <- CoMoMo(modelFits, weight = stack_ridge_weight, h = 50) 
+comb_stack0 <- CoMoMo(modelFits, weight = stack_ridge_weight, h = 50) 
 ```
 
 ## Questions 
