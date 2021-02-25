@@ -76,60 +76,87 @@ PLAT <- StMoMo(link = "log", staticAgeFun = TRUE, periodAgeFun = c("1", f2),
 
 models <- list("LC" = LC, "RH" = RH, "APC" = APC, "CBD" = CBD, "M7" = M7, "PLAT" = PLAT)
 
-# model names 
-
-modelNames <- c("LC","RH", "APC", "CBD", "M7", "PLAT")
-
-# use the function model() to assign names to the model list
-
-modlist <- model(models, modelNames)
-
-# Compute the weights
-# use the stacked regression ensemble (stack) with nnls as a metalearner 
+# Generate the metadata for stacked regression ensemble
 # h is the forecasting horizon
-# First, we train the models via cv to produce the forecasts
-# Then, we use the forecasts to calculate model weights.
+# First, we train the models via cv to produce the cross-validated forecasts
+# Combine the forecasts and observed rates to form a metadata.
 
-weight_stack <- stack(models = modlist, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, 
-h = 5, metalearner = "nnls")
+metaData <- stackMetadata(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15)
 
-plot(stacked)
+# Estimating the weights using different learners
+
+# When normalize = TRUE all the weights sum to a unit
+
+stack_ridge_weight <- stack(metaData, metalearner = "Ridge", normalize = TRUE)
+stack_lasso_weight <- stack(metaData, metalearner = "Lasso", normalize = TRUE)
+stack_nnls_weight <- stack(metaData, metalearner = "nnls", normalize = TRUE)
+stack_linear_weight <- stack(metaData, metalearner = "Linear", normalize = TRUE)
+stack_elastic_weight <- stack(metaData, metalearner = "Elastic", normalize = TRUE)
+
+# When normalize = False all the weights may not sum to a unit
+
+stack_ridge_weight0 <- stack(metaData, metalearner = "Ridge", normalize = FALSE)
+stack_lasso_weight0 <- stack(metaData, metalearner = "Lasso", normalize = FALSE)
+stack_nnls_weight0 <- stack(metaData, metalearner = "nnls", normalize = FALSE)
+stack_linear_weight0 <- stack(metaData, metalearner = "Linear", normalize = FALSE)
+stack_elastic_weight0 <- stack(metaData, metalearner = "Elastic", normalize = FALSE)
+
+# plot the weights 
+
+stack_ridge_plot <- plot(stack_ridge_weight)
+stack_lasso_plot <- plot(stack_lasso_weight)
+stack_nnls_plot <- plot(stack_nnls_weight)
+stack_linear_plot <- plot(stack_linear_weight)
+stack_elastic_plot <- plot(stack_elastic_weight)
 
 # use the Bayesian model averaging (bma) to estimate the weights
+# use single validation set appproach to estimate the weights 
+
+bma_weight_val <- bma(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15, method = "sv")
+
 # Cross-validation is used to calculate the cross-validation mean squared errors 
 
+bma_weight_cv <- bma(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15, method = "cv")
 
-weight_bma <- bma(models = modlist, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, 
-h = 5, method = "cv")
-
-plot(bmw)
 
 # use the Model Confidence Set (mcs) to choose the models to combine
+# use single validation set appproach to estimate the weights 
+
+mcs_weight_val <- mcs(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15, method = "sv")
+
 # Models are chosen via cross-validation
 # Models are chosen for each horizon
 
-weight_mcs <- mcs(models = modlist, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 5, 
-B = 5000, l=3, alpha = 0.1,  method = "cv")
+mcs_weight_cv <- mcs(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15,  method = "cv")
 
+# Fitting the models
 
-# combined forecasts
-# stack
+modelFits <- fitCoMoMo(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit)
 
-final <- CoMoMo(models = modlist, weight = weight_stack, data = DataStMoMo, ages.fit = agesFit,
-years.fit = yearsFit, h = 5)
+# combining the mortality rate forecasts using different weights 
 
-# Bayesian
+# simple model averaging 
 
-final <- CoMoMo(models = modlist, weight = weight_bma, data = DataStMoMo, ages.fit = agesFit,
-years.fit = yearsFit, h = 5)
+comb_simple <- CoMoMo(modelFits, h = 15)
 
-# mcs
+# stacked regression ensemble 
 
-final <- CoMoMo(models = modlist, weight = weight_mcs, data = DataStMoMo, ages.fit = agesFit,
-years.fit = yearsFit, h = 5)
+comb_stack <- CoMoMo(modelFits, weight = stack_ridge_weight, h = 15)
+
+# bma 
+
+comb_bma <- CoMoMo(modelFits, weight = bma_weight_cv, h = 15)
+
+# mcs 
+
+comb_mcs <- CoMoMo(modelFits, weight = mcs_weight_cv, h = 15)
+
+# when forecasting for h>15, the last horizon weights will be used for combining.
+# when h = 50, the weight when h =15 is used to combine 
+
+comb_stack <- CoMoMo(modelFits, weight = stack_ridge_weight, h = 50) 
 ```
 
 ## Questions 
-
 
 Please feel free to open an issue with any questions you may have. You can contact me at s.kessy@unsw.edu.au
