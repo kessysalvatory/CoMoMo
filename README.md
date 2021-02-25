@@ -74,7 +74,7 @@ PLAT <- StMoMo(link = "log", staticAgeFun = TRUE, periodAgeFun = c("1", f2),
                
 # model list 
 
-models <- list(LC, RH, APC, M7, PLAT, CBD)
+models <- list("LC" = LC, "RH" = RH, "APC" = APC, "CBD" = CBD, "M7" = M7, "PLAT" = PLAT)
 
 # model names 
 
