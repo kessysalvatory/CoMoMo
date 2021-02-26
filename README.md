@@ -152,7 +152,7 @@ comb_bma <- CoMoMo(modelFits, weight = bma_weight_cv, h = 15)
 comb_mcs <- CoMoMo(modelFits, weight = mcs_weight_cv, h = 15)
 
 # when forecasting for h>15, the last horizon weights will be used for combining.
-# when h = 50, the weight when h =15 is used to combine 
+# when h = 50, the weight when h =15 is used to combine all forecasts when h >15. 
 
 comb_stack0 <- CoMoMo(modelFits, weight = stack_ridge_weight, h = 50) 
 ```
