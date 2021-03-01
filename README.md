@@ -135,7 +135,7 @@ modelFits <- fitCoMoMo(models, data = DataStMoMo, ages.fit = agesFit, years.fit 
 
 # combining the fitted mortality models and different weights 
 
-modcom <- CoMoMo(modelFits, weight = stackedR)
+modcom <- CoMoMo(modelFits, weight = stack_ridge_weight)
 
 # forecast the mortality rates
 
