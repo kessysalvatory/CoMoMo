@@ -133,28 +133,13 @@ mcs_weight_cv <- mcs(models, data = DataStMoMo, ages.fit = agesFit, years.fit = 
 
 modelFits <- fitCoMoMo(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit)
 
-# combining the mortality rate forecasts using different weights 
+# combining the fitted mortality models and different weights 
 
-# simple model averaging 
+modcom <- CoMoMo(modelFits, weight = stackedR)
 
-comb_simple <- CoMoMo(modelFits, h = 15)
+# forecast the mortality rates
 
-# stacked regression ensemble 
-
-comb_stack <- CoMoMo(modelFits, weight = stack_ridge_weight, h = 15)
-
-# bma 
-
-comb_bma <- CoMoMo(modelFits, weight = bma_weight_cv, h = 15)
-
-# mcs 
-
-comb_mcs <- CoMoMo(modelFits, weight = mcs_weight_cv, h = 15)
-
-# when forecasting for h>15, the last horizon weights will be used for combining.
-# when h = 50, the weight when h =15 is used to combine all forecasts when h >15. 
-
-comb_stack0 <- CoMoMo(modelFits, weight = stack_ridge_weight, h = 50) 
+final <- forecast(modcom, h = 15)
 ```
 
 ## Questions 
