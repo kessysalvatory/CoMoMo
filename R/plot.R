@@ -10,7 +10,7 @@
 
 #' @export
 
-plot.weight <- function(object, size = 2, ...) {
+plot.weight <- function(object, size = 1, ...) {
 
   wplot <- ggplot2::ggplot(object$weights) + ggplot2::geom_line(aes(x = h, y = model.weights, group = model, colour = model, linetype = model), size = size) +
 
