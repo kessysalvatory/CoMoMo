@@ -668,6 +668,10 @@ mcs <- function(models,  method = "cv", data = NULL, Dxt = NULL, Ext = NULL, age
   {
     cat(paste("Warning: B is small \n"))
   }
+  
+  if ( alpha < 0 ||  alpha > 1) {
+    stop(" alpha must be in (0,1)")
+  }
 
 
   if (method!="cv" && method!="sv") stop("This is undefined method")
