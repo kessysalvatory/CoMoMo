@@ -49,29 +49,8 @@ APC <- apc()
 CBD <- cbd(link = "log")
 M7 <- m7(link = "log")
 RH <- rh(approxConst = TRUE)
-f2 <- function(x, ages) mean(ages) - x
-f3 <- function(x, ages) {ifelse((mean(ages) - x)<0, 0, (mean(ages) - x))}
-constPlat <- function(ax, bx, kt, b0x, gc, wxt, ages){
-  nYears <- dim(wxt)[2]
-  x <- ages
-  t <- 1:nYears
-  c <- (1 - tail(ages, 1)):(nYears - ages[1])
-  xbar <- mean(x)
-  phiReg <- lm(gc ~ 1 + c + I(c ^ 2), na.action = na.omit)
-  phi <- coef(phiReg)
-  gc <- gc - phi[1] - phi[2]*c-phi[3]*c^2
-  kt[2,] <- kt[2,] + 2*phi[3]*t
-  kt[1,] <- kt[1,]+phi[2]*t+phi[3]*(t^2 - 2*xbar*t)
-  ax <- ax+phi[1] - phi[2]*x+phi[3]*x^2
-  ci <- rowMeans(kt, na.rm = TRUE)
-  ax <- ax+ci[1]+ci[2]*(xbar-x)
-  kt[1, ] <- kt[1, ] - ci[1]
-  kt[2, ] <- kt[2, ] - ci[2]
-  list(ax = ax,bx = bx,kt = kt,b0x = b0x,gc = gc)
-}
-PLAT <- StMoMo(link = "log", staticAgeFun = TRUE, periodAgeFun = c("1", f2),
-               cohortAgeFun = "1", constFun = constPlat)
-               
+PLAT <- plat()
+            
 # model list 
 
 models <- list("LC" = LC, "RH" = RH, "APC" = APC, "CBD" = CBD, "M7" = M7, "PLAT" = PLAT)
