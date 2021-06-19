@@ -9,14 +9,14 @@
 #'
 #' @details Bayesian Model Averaging estimates the weights using the posterior model probabilities.
 #'
-#' @details  Model Confidence Set chooses the subset of superior mortality models to combine
+#' @details Model Confidence Set chooses the subset of superior mortality models to combine
 #' where each model is assigned equal weight
 #'
 #' @details Stacked Regression Ensemble combines point forecasts from
 #' multiple base learners using the weights that optimize a
 #' cross-validation criterion.
 #'
-#' @param models are the specified models to be combined.
+#' @param models are the specified list of models to be combined.
 #'
 #' @param h number of years for forecasting horizon.
 #'
@@ -180,7 +180,7 @@ cvloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL,
 
   obsRatesDF4 <- lapply(1:h, function(x)  dplyr::bind_cols(rep(observedrates_mcs[[x]][[1]], ncol(Forecasts_mcs[[1]]))))
 
-  for (i in 1:length(1:h))
+  for (i in 1:h)
 
   { colnames(obsRatesDF4[[i]]) <- unlist(Specified_Models)
 
@@ -225,8 +225,8 @@ cvloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL,
 #' LC <- lc()
 #' APC <- apc()
 #' modlist <- list("LC"= LC, "APC" = APC)
-#'
-#' weight_bma <- bma(modlist, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 5, method = "cv")
+#' bma_weight_val <- bma(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit,h = 15, method = "sv")
+#' bma_weight_cv <- bma(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15, method = "cv")                  
 #'
 #' @export
 
@@ -308,11 +308,8 @@ bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages
 #' @param normalize allows the user to specify if the weights are to sum to one or not. The default option normalize = TRUE
 #' makes all the weights sum to a unit, otherwise when normalize = FALSE the weights do not sum to one.
 #'
-#' @param saveMetadata allows the user to save the cross-validation data that can be reused when a new meta-learner is used.
-#' If the user sets saveMetadata = TRUE the cross-validation data will be saved and when the new meta-learner is used,
-#' it takes almost no time to run. When saveMetadata = FALSE no data is saved.
-#'
 #' @return Returns an object of class \code{CoMoMo} with the following components:
+#'                                    
 #' \item{Weights}{Returns the combination weights for different horizons.}
 #' \item{metalearner}{Returns the meta-learner used to learn the weights.}
 #' \item{cvmse}{Returns the cross-validation errors for each method for different horizons.}
@@ -325,9 +322,8 @@ bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages
 #' LC <- lc()
 #' APC <- apc()
 #' modlist <- list("LC"= LC, "APC" = APC)
-#'
-#' weight_stack <- stack(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 5, metalearner = "nnls")
-#'
+#' metaData <- stackMetadata(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15)                     
+#' weight_stack <- stack(metaData, metalearner = "nnls", normalize = TRUE)
 #'
 #' @export
 #'
@@ -599,9 +595,9 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 #' LC <- lc()
 #' APC <- apc()
 #' modlist <- list("LC"= LC, "APC" = APC)
-#'
-#' weight_mcs <- mcs(modlist, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 5, method = "cv")
-#'
+#' mcs_weight_val <- mcs(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15, method = "sv")
+#' mcs_weight_cv <- mcs(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15,  method = "cv")
+                    
 #' @export
 
 mc <- function(Loss, B, l){
