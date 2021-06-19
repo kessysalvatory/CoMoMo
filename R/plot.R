@@ -1,10 +1,10 @@
 #'
 #' @title Plot the weights from different model combination methods
 #'
-#' @param object an object containing the weights for different horizons.
+#' @param object an object of type weight containing the weights for different horizons.
 #'
 #'  @examples
-#'
+#' Dont run 
 #' weights <- bma(modlist, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 5, method = "cv")
 #' plot(weights)
 
