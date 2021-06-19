@@ -1,5 +1,7 @@
-#' @title fitting different methods.
-#'
+#' @title fitting different GAPC mortality methods using the StMoMo package.
+#' 
+#' @return Returns the list of the fitted GAPC mortality methods. 
+#' 
 #' @export
 #'
 fitCoMoMo <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL)
@@ -13,7 +15,7 @@ fitCoMoMo <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NU
 
   if(length(unique(unname(models))) < length(models)) stop("Models must be different.")
 
-  # Determine model.fitsting ages and years are specified
+  # Determine fitting ages and years are specified
 
   if(!is.null(data)) {
     if (class(data) != "StMoMoData") {
@@ -38,6 +40,8 @@ fitCoMoMo <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NU
 
   Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
 
+  # fit using StMoMo package 
+                             
   fitModels <-  lapply(models, function(x) StMoMo::fit(x,  Dxt = Dxt, Ext = Ext, ages = ages, years = years,
                                                        data = data, ages.fit = ages.fit, years.fit = years.fit))
 
