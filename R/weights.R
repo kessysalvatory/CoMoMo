@@ -225,7 +225,7 @@ cvloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL,
 #'
 #' @examples
 #'
-#' # define models
+#' define models
 #'
 #' LC <- lc()
 #' APC <- apc()
