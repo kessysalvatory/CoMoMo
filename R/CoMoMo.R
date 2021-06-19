@@ -1,22 +1,15 @@
 
-#' @usage combines the mortality rate forecasts using different model combinations methods
+#' @usage combines the fitted mortality models and combination weights.
 #'
-#' @return Returns an object of class \code{CoMoMo.default} with the following components:
+#' @return Returns an object of class \code{CoMoMo} with the following components:
 #'
 #' \item{Comb}{Returns the combinated forecasts for different horizon.}
 #'
-#' \item{Pred}{Returns the predictions of individual mortality models for different horizon.}
-#'
-#' \item{comb.method }{Returns the combination approach.}
-#'
 #'  @examples
 #'
-#'  comb <- CoMoMo(modlist, data = DataStMoMo, ages.fit = ages.fit, years.fit = years.fit, h = 5)
+#'  modelFits <- fitCoMoMo(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit)
 #'
-#'  weights <- bma(modlist, data = DataStMoMo, ages.fit = ages.fit, years.fit = years.fit, h = 5, method = "cv")
-#'
-#'  comb <- CoMoMo(modlist, weight =  weights, data = DataStMoMo,  ages.fit = ages.fit, years.fit = years.fit, h = 5)
-#'
+#'  modcom <- CoMoMo(modelFits, weight = stack_nnls_weight)
 #'
 #'
 #' @export
