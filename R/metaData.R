@@ -1,6 +1,6 @@
 #' @title Generating the metadata. 
 #'
-#' @description The stacked regression ensemble often proceeds in two steps in generating the final predictions. 
+#' @description Stacked regression ensemble often proceeds in two steps in generating the final predictions. 
 #' The first step consists of multiple base models which separately generate cross-validated predictions from the training data. 
 #' The predictions from various models and the observed response variable constitute the metadata.
 #'
