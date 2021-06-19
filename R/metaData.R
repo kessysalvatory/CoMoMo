@@ -1,3 +1,15 @@
+#' @title Weights estimation using different model combinations methods.
+#'
+#' @description The stacked regression ensemble often proceeds in two steps in generating the final predictions. 
+#' The first step consists of multiple base models which separately generate cross-validated predictions from the training data. 
+#' The predictions from various models and the observed response variable constitute the metadata.
+
+#'  @param h number of years for forecasting horizon. 
+#'  @return Returns an object of the class \code{stackmeta} with the following components: 
+#' \item{metadata}{A list of the metadata for different forecasting horizons.}
+#' \item{cvmse}{A list of the metadata for different forecasting horizons.}
+#' \item{models}{A list of the models used to generate the metadata}
+
 #' @export
 #'
 #'
