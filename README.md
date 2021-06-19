@@ -93,20 +93,35 @@ stack_elastic_plot <- plot(stack_elastic_weight)
 
 bma_weight_val <- bma(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15, method = "sv")
 
+# plot the weights 
+
+bma_weight_val_plot <- plot(bma_weight_val)
+
 # Cross-validation is used to calculate the cross-validation mean squared errors 
 
 bma_weight_cv <- bma(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15, method = "cv")
 
+# plot the weights 
+
+bma_weight_cv_plot <- plot(bma_weight_cv)
 
 # use the Model Confidence Set (mcs) to choose the models to combine
 # use single validation set appproach to estimate the weights 
 
 mcs_weight_val <- mcs(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15, method = "sv")
 
+# plot the weights 
+
+mcs_weight_val_plot <- plot(mcs_weight_val)
+
 # Models are chosen via cross-validation
 # Models are chosen for each horizon
 
 mcs_weight_cv <- mcs(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15,  method = "cv")
+
+# plot the weights 
+
+mcs_weight_cv_plot <- plot(mcs_weight_cv)
 
 # Fitting the models
 
