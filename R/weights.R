@@ -223,7 +223,7 @@ cvloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL,
 #' @examples
 #'
 #' define models
-#'
+#' Dont run 
 #' LC <- lc()
 #' APC <- apc()
 #' modlist <- list("LC"= LC, "APC" = APC)
@@ -319,13 +319,12 @@ bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages
 #' @examples
 #'
 #' # define models
-#'
+#' Dont run 
 #' LC <- lc()
 #' APC <- apc()
 #' modlist <- list("LC"= LC, "APC" = APC)
 #' metaData <- stackMetadata(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15)                     
-#' weight_stack <- stack(metaData, metalearner = "nnls", normalize = TRUE)
-#' Dont run                                       
+#' weight_stack <- stack(metaData, metalearner = "nnls", normalize = TRUE)                                      
 #' @export
 #'
 #'
@@ -603,13 +602,13 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 #' @examples
 #'
 #' # define models
-#'
+#' Dont run 
 #' LC <- lc()
 #' APC <- apc()
 #' modlist <- list("LC"= LC, "APC" = APC)
 #' mcs_weight_val <- mcs(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15, method = "sv")
 #' mcs_weight_cv <- mcs(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15,  method = "cv")
-#' Dont run                                                 
+                                              
                     
 #' @export
 
