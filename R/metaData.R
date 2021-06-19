@@ -3,7 +3,11 @@
 #' @description Stacked regression ensemble often proceeds in two steps in generating the final predictions. 
 #' The first step consists of multiple base models which separately generate cross-validated predictions from the training data. 
 #' The predictions from various models and the observed response variable constitute the metadata.
+ #' @references
 #'
+#' Kessy, Salvatory, Michael Sherris, Andrés Villegas, and Jonathan Ziveyi. 2021. 
+#' “Mortality Forecasting Using Stacked Regression Ensembles.” SSRN Electronic Journal. https://doi.org/10.2139/ssrn.3823511.
+#' 
 #'  @param h number of years for forecasting horizon. 
 #'
 #'  @return Returns an object of the class \code{stackmeta} with the following components: 
@@ -12,7 +16,6 @@
 #'  \item{models}{A list of the models used to generate the metadata.}
 
 #' @export
-#'
 #'
 stackMetadata <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, h = NULL)
 
