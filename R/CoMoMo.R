@@ -9,8 +9,6 @@
 #'
 #' \item{comb.method }{Returns the combination approach.}
 #'
-#' \item{mse}{Returns the mean squared errors.}
-#'
 #'  @examples
 #'
 #'  comb <- CoMoMo(modlist, data = DataStMoMo, ages.fit = ages.fit, years.fit = years.fit, h = 5)
