@@ -208,11 +208,9 @@ cvloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL,
 #' @param method optional paramater specifying how the models are trained. Cross-validation (cv) is default option
 #' Single-validation (sv) option can also be specified.
 #'
-#' @return Returns an object of class \code{CoMoMo} with the following components:
+#' @return Returns an object of class \code{weight} with the following components:
 #'
 #' \item{weights}{Returns the combination weights for different horizons.}
-#'
-#' \item{cvmse}{Returns the cross-validation errors for each method for different horizons.}
 #'
 #' \item{comb.method}{Returns the combination method}
 #'
@@ -237,7 +235,7 @@ cvloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL,
 
 bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, holdout = round(length(years.fit)/3,0), h = NULL)
 
-{
+{ # the function calculate the Bayesian weights. 
 
   if ( holdout < round(length(years.fit)/3,0))
   {
@@ -313,11 +311,10 @@ bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages
 #' @param normalize allows the user to specify if the weights are to sum to one or not. The default option normalize = TRUE
 #' makes all the weights sum to a unit, otherwise when normalize = FALSE the weights do not sum to one.
 #'
-#' @return Returns an object of class \code{CoMoMo} with the following components:
+#' @return Returns an object of class \code{weight} with the following components:
 #'                                    
 #' \item{Weights}{Returns the combination weights for different horizons.}
 #' \item{metalearner}{Returns the meta-learner used to learn the weights.}
-#' \item{cvmse}{Returns the cross-validation errors for each method for different horizons.}
 #' \item{comb.method}{Returns the combination method}
 #'
 #' @examples
@@ -329,7 +326,7 @@ bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages
 #' modlist <- list("LC"= LC, "APC" = APC)
 #' metaData <- stackMetadata(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15)                     
 #' weight_stack <- stack(metaData, metalearner = "nnls", normalize = TRUE)
-#'
+#' Dont run                                       
 #' @export
 #'
 #'
@@ -340,16 +337,17 @@ stack  <- function(stackmeta,...) {
 #'
 #' @export
 #'
-#'
 stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
-{
+{ # the function calculate the weights using stacked regression. 
 
   if (metalearner!="Lasso" && metalearner!="Ridge" && metalearner!="Elastic" && metalearner!="nnls" && metalearner!="Linear") stop("unknown metalearner.")
 
   # Train meta model
 
   if (normalize)
+    
+    # make all combining weights sum to a unit 
 
   {  # learning weights using ridge regression
 
@@ -443,7 +441,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
     }
 
-    # learning weights using linear squared regression
+    # learning weights using standard linear squared regression
 
     else if (metalearner=="Linear"){
 
@@ -469,7 +467,9 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
   else if (!normalize)
 
-  {
+  { # not necessary the combining weights sum to a unit 
+    
+    # learning weights using ridge regression
 
     if (metalearner=="Ridge"){
 
@@ -492,7 +492,9 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
       return(result)
 
     }
-
+                                                 
+   # learning weights using lasso regression
+                                                 
     else if (metalearner=="Lasso"){
 
       lasso.model <- lapply(1:length(stackmeta$metadata), function(x) glmnet::glmnet(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 1))
@@ -514,7 +516,9 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
       return(result)
 
     }
-
+                                                 
+# learning weights using elastic net regression
+                                                 
     else if (metalearner=="Elastic"){
 
       elastic.model <- lapply(1:length(stackmeta$metadata), function(x) glmnet::glmnet(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 0.5))
@@ -536,7 +540,9 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
       return(result)
 
     }
-
+                                                   
+# learning weights using non-negative least squared regression
+                                                   
     else if(metalearner=="nnls") {
 
       coeffients <-lapply(1:length(stackmeta$metadata), function(x) nnls::nnls(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])])$x)
@@ -553,7 +559,9 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
       return(result)
     }
-
+                                                
+# learning weights using standard linear squared regression
+                                                
     else if (metalearner=="Linear"){
 
       linear.model <- lapply(1:length(stackmeta$metadata), function(x) lm(rate~., data =  as.data.frame(stackmeta$metadata[[x]])))
@@ -588,7 +596,6 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 #' @return Returns an object of class \code{CoMoMo} with the following components:
 #'
 #' \item{weights}{Returns the combination weights for different horizons.}
-#' \item{cvmse}{Returns the cross-validation errors for each method for different horizons.}
 #' \item{comb.method}{Returns the combination method}
 #' \item{method}{Returns the trainining method either cv or sv.}
 #' \item{Selected models}{Returns the superior models selected.}
@@ -602,6 +609,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 #' modlist <- list("LC"= LC, "APC" = APC)
 #' mcs_weight_val <- mcs(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15, method = "sv")
 #' mcs_weight_cv <- mcs(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15,  method = "cv")
+#' Dont run                                                 
                     
 #' @export
 
@@ -658,7 +666,7 @@ mc <- function(Loss, B, l){
 mcs <- function(models,  method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL,
                 ages = NULL, years = NULL, h = NULL, B = 5000, l = 3, alpha = 0.1, holdout = round(length(years.fit)/3,0))
 
-{
+{ # function to compute the combination weights using model confidence set
 
   if ( holdout < round(length(years.fit)/3,0))
   {
@@ -677,6 +685,8 @@ mcs <- function(models,  method = "cv", data = NULL, Dxt = NULL, Ext = NULL, age
 
   if (method!="cv" && method!="sv") stop("This is undefined method")
 
+  # single validation set 
+  
   if (method == "sv")
 
   {
@@ -719,7 +729,9 @@ mcs <- function(models,  method = "cv", data = NULL, Dxt = NULL, Ext = NULL, age
     return(res)
 
   }
-
+                                    
+# cross-validation
+                                    
   else if ( method=="cv")
 
   {
