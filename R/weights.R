@@ -313,8 +313,7 @@ bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages
 #' @return Returns an object of class \code{weight} with the following components:
 #'                                    
 #' \item{Weights}{Returns the combination weights for different horizons.}
-#' \item{metalearner}{Returns the meta-learner used to learn the weights.}
-#' \item{cvmse}{Returns the cross-validation mean squared error for each all the indiviual models for different horizons.}                                       
+#' \item{metalearner}{Returns the meta-learner used to learn the weights.}                                     
 #' \item{comb.method}{Returns the combination method}
 #'
 #' @examples
@@ -342,8 +341,6 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 { # the function calculate the weights using stacked regression. 
 
   if (metalearner!="Lasso" && metalearner!="Ridge" && metalearner!="Elastic" && metalearner!="nnls" && metalearner!="Linear") stop("unknown metalearner.")
-
-  output0 <- cvloss(models = models, data = data, ages.fit = ages.fit, years.fit = years.fit, h = h, Dxt = Dxt, Ext = Ext, ages = ages, years = years)
   
   # Train meta model
 
@@ -367,7 +364,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
       weightsDF_ridge <- dplyr::bind_rows(lapply(weights1_ridge, function(x) x %>%dplyr::mutate(model = stackmeta$models)))
 
-      result <- structure(list(weights =  weightsDF_ridge, metalearner = "Ridge", cvmse =  output0$CVE, comb.method = "stack"))
+      result <- structure(list(weights =  weightsDF_ridge, metalearner = "Ridge", comb.method = "stack"))
 
       class(result) <- "weight"
 
@@ -391,7 +388,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
       weightsDF_lasso <- dplyr::bind_rows(lapply(weights1_lasso, function(x) x %>% dplyr::mutate(model = stackmeta$models)))
 
-      result <- structure(list(weights =  weightsDF_lasso, metalearner = "Lasso", cvmse =  output0$CVE, comb.method = "stack"))
+      result <- structure(list(weights =  weightsDF_lasso, metalearner = "Lasso", comb.method = "stack"))
 
       class(result) <- "weight"
 
@@ -415,7 +412,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
       weightsDF_elastic <- dplyr::bind_rows(lapply(weights1_elastic, function(x) x %>% dplyr::mutate(model = stackmeta$models)))
 
-      result <- structure(list(weights =  weightsDF_elastic, metalearner = "Elastic", cvmse =  output0$CVE, comb.method = "stack"))
+      result <- structure(list(weights =  weightsDF_elastic, metalearner = "Elastic", comb.method = "stack"))
 
       class(result) <- "weight"
 
@@ -435,7 +432,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
       weightsDF_nnls <- dplyr::bind_rows(lapply(weights1_nnls, function(x) x %>% dplyr::mutate(model = stackmeta$models)))
 
-      result <- structure(list(weights = weightsDF_nnls, metalearner = "nnls",  cvmse =  output0$CVE, comb.method = "stack"))
+      result <- structure(list(weights = weightsDF_nnls, metalearner = "nnls", comb.method = "stack"))
 
       class(result) <- "weight"
 
@@ -457,7 +454,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
       weightsDF_linear <- dplyr::bind_rows(lapply(weights1_linear, function(x) x %>% dplyr::mutate(model = stackmeta$models)))
 
-      result <- structure(list(weights = weightsDF_linear,  metalearner = "Linear", cvmse =  output0$CVE, comb.method = "stack"))
+      result <- structure(list(weights = weightsDF_linear,  metalearner = "Linear", comb.method = "stack"))
 
       class(result) <- "weight"
 
@@ -487,7 +484,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
       weightsDF_ridge <- dplyr::bind_rows(lapply(weights1_ridge, function(x) x %>%dplyr::mutate(model = stackmeta$models)))
 
-      result <- structure(list(weights =  weightsDF_ridge, metalearner = "Ridge", cvmse =  output0$CVE, comb.method = "stack"))
+      result <- structure(list(weights =  weightsDF_ridge, metalearner = "Ridge", comb.method = "stack"))
 
       class(result) <- "weight"
 
@@ -511,7 +508,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
       weightsDF_lasso <- dplyr::bind_rows(lapply(weights1_lasso, function(x) x %>% dplyr::mutate(model = stackmeta$models)))
 
-      result <- structure(list(weights =  weightsDF_lasso, metalearner = "Lasso", cvmse =  output0$CVE, comb.method = "stack"))
+      result <- structure(list(weights =  weightsDF_lasso, metalearner = "Lasso", comb.method = "stack"))
 
       class(result) <- "weight"
 
@@ -535,7 +532,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
       weightsDF_elastic <- dplyr::bind_rows(lapply(weights1_elastic, function(x) x %>% dplyr::mutate(model =stackmeta$models)))
 
-      result <- structure(list(weights =  weightsDF_elastic, metalearner = "Elastic", cvmse =  output0$CVE, comb.method = "stack"))
+      result <- structure(list(weights =  weightsDF_elastic, metalearner = "Elastic",  comb.method = "stack"))
 
       class(result) <- "weight"
 
@@ -555,7 +552,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
       weightsDF_nnls <- dplyr::bind_rows(lapply(weights1_nnls, function(x) x %>% dplyr::mutate(model = stackmeta$models)))
 
-      result <- structure(list(weights = weightsDF_nnls, metalearner = "nnls",  cvmse =  output0$CVE, comb.method = "stack"))
+      result <- structure(list(weights = weightsDF_nnls, metalearner = "nnls", comb.method = "stack"))
 
       class(result) <- "weight"
 
@@ -576,7 +573,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE)
 
       weightsDF_linear <- dplyr::bind_rows(lapply(weights1_linear, function(x) x %>% dplyr::mutate(model =stackmeta$models)))
 
-      result <- structure(list(weights = weightsDF_linear,  metalearner = "Linear", cvmse =  output0$CVE, comb.method = "stack"))
+      result <- structure(list(weights = weightsDF_linear,  metalearner = "Linear", comb.method = "stack"))
 
       class(result) <- "weight"
 
