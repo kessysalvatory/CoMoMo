@@ -3,7 +3,8 @@
 #'
 stackMetadata <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, h = NULL)
 
-{
+{ # the function compute the metadata using block-cross-validation
+  
   # check if the supplied models are different
 
   if(length(unique(unname(models))) < length(models)) stop("Models must be different.")
