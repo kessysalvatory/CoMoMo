@@ -217,6 +217,10 @@ cvloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL,
 #' \item{comb.method}{Returns the combination method}
 #'
 #' \item{method}{Returns the trainining method either cv or sv.}
+#' @references
+#'
+#' Kessy, Salvatory, Michael Sherris, Andrés Villegas, and Jonathan Ziveyi. 2021. 
+#' “Mortality Forecasting Using Stacked Regression Ensembles.” SSRN Electronic Journal. https://doi.org/10.2139/ssrn.3823511.
 #'
 #' @examples
 #'
