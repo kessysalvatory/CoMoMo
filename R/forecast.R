@@ -1,11 +1,13 @@
 #' @export
 #'
 #' @importFrom forecast forecast
-#'
+#' 
+#' @param object is an object of type CoMoMo. 
 
 forecast.CoMoMo <- function(object, h = h, ...)
 
-{
+{  # forecasting using stacked regression, BMA, & MCS. 
+  
   Specified_Models <- lapply(1:length(object$model.fits), function(x) names(object$model.fits[x]))
 
   forModels <-  lapply(1:length(object$model.fits), function(x) forecast(object$model.fits[[x]], h = h))
@@ -75,7 +77,6 @@ forecast.CoMoMo <- function(object, h = h, ...)
 
   {
     # updates the weights when predicting shorter horizon than the horizon
-
     # for the weights
 
     object$weight$weights <- head(object$weight$weights, length(models)*h)
@@ -94,7 +95,8 @@ forecast.CoMoMo <- function(object, h = h, ...)
 #'
 forecast.CoMoMo.simple <- function(object, h = h, ...)
 
-{
+{ # forecasting using simple model averaging. 
+  
   # names of specified models
 
   Specified_Models <- lapply(1:length(object$model.fits), function(x) names(object$model.fits[x]))
