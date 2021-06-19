@@ -1,6 +1,6 @@
 # CoMoMo
 
-Welcome to CoMoMo: CoMoMo combines multiple GAPC mortality forecasts using different model combinations.
+Welcome to CoMoMo: CoMoMo combines multiple mortality forecasts using different model combinations.
 
 CoMoMo is an R package for combining the mortality rate forecasts from the Generalized Age Period cohort models. 
 
