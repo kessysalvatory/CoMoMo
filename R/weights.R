@@ -776,7 +776,7 @@ frequentist <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = 
   
   output0 <- cvloss(models = models, data = data, ages.fit = ages.fit, years.fit = years.fit, h = h, Dxt = Dxt, Ext = Ext, ages = ages, years = years)
   
- fweights<-lapply(1:h, function(x) data.frame(h = x, weights = (dplyr::bind_rows(output0$cvmse[[x]])/sum(dplyr::bind_rows(output0$cvmse[[x]]))))
+  fweights<-lapply(1:h, function(x) data.frame(h = x, weights = (dplyr::bind_rows(output0$cvmse[[x]]))/sum(dplyr::bind_rows(output0$cvmse[[x]]))))
   
   out <- dplyr::bind_rows(lapply(fweights, function(x) x %>%dplyr::mutate(model = unlist(Specified_Models))))
   
@@ -786,6 +786,6 @@ frequentist <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = 
   
   class(result)<- "weight"
    
-   return(result)
+  return(result)
 
 }
