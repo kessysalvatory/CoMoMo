@@ -785,5 +785,7 @@ frequentist <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = 
   result <- structure(list(weights = output, cvmse =  output0$CVE, comb.method = "frequentist"))
   
   class(result)<- "weight"
+   
+   return(result)
 
 }
