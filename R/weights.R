@@ -763,3 +763,27 @@ mcs <- function(models,  method = "cv", data = NULL, Dxt = NULL, Ext = NULL, age
   }
 
 }
+ 
+#' @export                       
+                       
+frequentist <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL,
+                        ages = NULL, years = NULL, h = NULL)
+  
+{  # estimates the weights using the cvmse for each horizon 
+   # weight <- cvme/sum(cvmse)
+  
+  Specified_Models <- lapply(1:length(models), function(x) names(models[x]))
+  
+  output0 <- cvloss(models = models, data = data, ages.fit = ages.fit, years.fit = years.fit, h = h, Dxt = Dxt, Ext = Ext, ages = ages, years = years)
+  
+  fweights<-  lapply(1:h, function(x) data.frame(h = x, weights = dplyr::bind_rows(output0$cvmse[[x]]/sum(dplyr::bind_rows(output0$cvmse[[x]])))))
+  
+  out <- dplyr::bind_rows(lapply(fweights, function(x) x %>%dplyr::mutate(model = unlist(Specified_Models))))
+  
+  output <- out%>%dplyr::rename(model.weights = cv.mse)
+  
+  result <- structure(list(weights = output, cvmse =  output0$CVE, comb.method = "frequentist"))
+  
+  class(result)<- "weight"
+
+}
