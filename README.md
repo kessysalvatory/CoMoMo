@@ -123,6 +123,11 @@ mcs_weight_cv <- mcs(models, data = DataStMoMo, ages.fit = agesFit, years.fit = 
 
 mcs_weight_cv_plot <- plot(mcs_weight_cv)
 
+# Estimates the weights using the frequentist approach 
+# Estimates the weight at horizon h as the ratio of cvmse(h)/sum(cvmse(h))
+
+fweights <- frequentist(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15)
+
 # Fitting the models
 
 modelFits <- fitCoMoMo(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit)
