@@ -692,7 +692,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE, d
       
       else if (metalearner=="Linear"){
         
-        linear.model <- lm(y~., data = data_train)
+        linear.model <- lm(rate~., data =  as.data.frame(Data))
         coeffients <- coef(linear.model)[-1]
         weights_linear <- as.matrix(coeffients/sum(coeffients))
         
@@ -790,7 +790,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE, d
     
     else if (metalearner=="Linear"){
       
-      linear.model <- lm(y~., data = data_train)
+      linear.model <- lm(rate~., data =  as.data.frame(Data))
       coeffients <- coef(linear.model)[-1]
       weights_linear <- as.matrix(coeffients)
       
