@@ -693,7 +693,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE, d
       else if (metalearner=="Linear"){
         
         linear.model <- lm(rate~., data =  as.data.frame(Data))
-        coeffients <- coef(linear.model)[-1]
+        coeffients <- unname(coef(linear.model)[-1])
         weights_linear <- as.matrix(coeffients/sum(coeffients))
         
         weightsDF_linear <- (dplyr::bind_rows(lapply(rep(list(data.frame(weights_linear)), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 1, 2)]
@@ -791,7 +791,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE, d
     else if (metalearner=="Linear"){
       
       linear.model <- lm(rate~., data =  as.data.frame(Data))
-      coeffients <- coef(linear.model)[-1]
+      coeffients <- unname(coef(linear.model)[-1])
       weights_linear <- as.matrix(coeffients)
       
       weightsDF_linear <- (dplyr::bind_rows(lapply(rep(list(data.frame(weights_linear)), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 1, 2)]
