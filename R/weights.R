@@ -690,7 +690,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE, d
         
       }
       
-      else if (metalearner=="LR"){
+      else if (metalearner=="Linear"){
         
         linear.model <- lm(y~., data = data_train)
         coeffients <- coef(linear.model)[-1]
@@ -788,7 +788,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE, d
       return(result)
     }
     
-    else if (metalearner=="LR"){
+    else if (metalearner=="Linear"){
       
       linear.model <- lm(y~., data = data_train)
       coeffients <- coef(linear.model)[-1]
