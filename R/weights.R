@@ -700,7 +700,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE, d
         
         names(weightsDF_linear)[2] <- "model.weights"
                                                     
-        result <- structure(list(weights =  weightsDF_nnls,  metalearner = "Elastic", comb.method = "stack"))
+        result <- structure(list(weights =  weightsDF_linear,  metalearner = "Linear", comb.method = "stack"))
         
         class(result) <- "weight"
         
@@ -798,7 +798,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE, d
         
       names(weightsDF_linear)[2] <- "model.weights"
                                                     
-      result <- structure(list(weights =  weightsDF_nnls,  metalearner = "Elastic", comb.method = "stack"))
+      result <- structure(list(weights =   weightsDF_linear,  metalearner = "Linear", comb.method = "stack"))
         
       class(result) <- "weight"
         
