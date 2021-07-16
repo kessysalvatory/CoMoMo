@@ -623,7 +623,7 @@ stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE, d
         coeffients <- coef(ridge.model, s = cv_ridge$lambda.min)[-1]
         weights_ridge <- as.matrix(coeffients/sum(coeffients))
         
-        weightsDF_ridge <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_ridge%>%dplyr::pull(weights_ridge))), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 2, 1)]
+        weightsDF_ridge <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_ridge)), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 2, 1)]
       
         result <- structure(list(weights = weightsDF_ridge,  metalearner = "Ridge", comb.method = "stack"))
         
