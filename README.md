@@ -14,7 +14,7 @@ devtools::install_github("amvillegas/StMoMo", ref = "GroupLasso")
 
 ## Installation
 
-The easiest way to install CoMoMo is using the devtools package:
+If you have R 4.0.2 or later and use Windows or Mac, the easiest way to install CoMoMo is using the devtools package:
 
 ``` r
 devtools::install_github("kessysalvatory/CoMoMo")
