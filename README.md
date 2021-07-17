@@ -64,13 +64,14 @@ metaData <- stackMetadata(models, data = DataStMoMo, ages.fit = agesFit, years.f
 
 # Estimating the weights using different learners
 
-# When normalize = TRUE all the weights sum to a unit
+# When normalize = TRUE all the weights sum to a unit and dynamic = TRUE to get horizon-specific weights 
 
-stack_ridge_weight <- stack(metaData, metalearner = "Ridge", normalize = TRUE)
-stack_lasso_weight <- stack(metaData, metalearner = "Lasso", normalize = TRUE)
-stack_nnls_weight <- stack(metaData, metalearner = "nnls", normalize = TRUE)
-stack_linear_weight <- stack(metaData, metalearner = "Linear", normalize = TRUE)
-stack_elastic_weight <- stack(metaData, metalearner = "Elastic", normalize = TRUE)
+stack_ridge_weight <- stack(metaData, metalearner = "Ridge", normalize = TRUE, dynamic = TRUE)
+stack_lasso_weight <- stack(metaData, metalearner = "Lasso", normalize = TRUE, dynamic = TRUE)
+stack_nnls_weight <- stack(metaData, metalearner = "nnls", normalize = TRUE, dynamic = TRUE)
+stack_linear_weight <- stack(metaData, metalearner = "Linear", normalize = TRUE, dynamic = TRUE)
+stack_elastic_weight <- stack(metaData, metalearner = "Elastic", normalize = TRUE, dynamic = TRUE)
+
 
 # When normalize = False all the weights may not sum to a unit
 
@@ -79,6 +80,15 @@ stack_lasso_weight0 <- stack(metaData, metalearner = "Lasso", normalize = FALSE)
 stack_nnls_weight0 <- stack(metaData, metalearner = "nnls", normalize = FALSE)
 stack_linear_weight0 <- stack(metaData, metalearner = "Linear", normalize = FALSE)
 stack_elastic_weight0 <- stack(metaData, metalearner = "Elastic", normalize = FALSE)
+
+# When dynamic = FALSE, we get a single set of constant weights for all the forecasting horizons. 
+
+dstack_ridge_weight <- stack(metaData, metalearner = "Ridge", normalize = TRUE, dynamic = FALSE)
+dstack_lasso_weight <- stack(metaData, metalearner = "Lasso", normalize = TRUE, dynamic = FALSE)
+dstack_nnls_weight <- stack(metaData, metalearner = "nnls", normalize = TRUE, dynamic = FALSE)
+dstack_linear_weight <- stack(metaData, metalearner = "Linear", normalize = TRUE, dynamic = FALSE)
+dstack_elastic_weight <- stack(metaData, metalearner = "Elastic", normalize = TRUE, dynamic = FALSE)
+
 
 # plot the weights 
 
