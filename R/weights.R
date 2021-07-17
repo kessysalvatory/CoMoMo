@@ -310,6 +310,9 @@ bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages
 #' @param normalize allows the user to specify if the weights are to sum to one or not. The default option normalize = TRUE
 #' makes all the weights sum to a unit, otherwise when normalize = FALSE the weights do not sum to one.
 #'
+#' @param dynamic allows the user to specify if the weights should change across forecast horizons or not. The default option dynamic = TRUE
+#' makes the weights change across horizons, otherwise when dynamic = FALSE the weights are costant across horizons.
+#'                                       
 #' @return Returns an object of class \code{weight} with the following components:
 #'                                    
 #' \item{Weights}{Returns the combination weights for different horizons.}
