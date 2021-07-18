@@ -60,7 +60,7 @@ models <- list("LC" = LC, "RH" = RH, "APC" = APC, "CBD" = CBD, "M7" = M7, "PLAT"
 # First, we train the models via cv to produce the cross-validated forecasts
 # Combine the forecasts and observed rates to form a metadata.
 
-metaData <- stackMetadata(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15)
+metaData <- metadata(models, data = DataStMoMo, ages.fit = agesFit, years.fit = yearsFit, h = 15)
 
 # Estimating the weights using different learners
 
