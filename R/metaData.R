@@ -17,7 +17,7 @@
 
 #' @export
 #'
-stackMetadata <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, h = NULL)
+metadata <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, h = NULL)
 
 { # the function compute the metadata using block-cross-validation
   
