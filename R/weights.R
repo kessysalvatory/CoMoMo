@@ -346,247 +346,247 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
   
   if (dynamic) {
     
-  # Train meta model
-  
-  if (normalize)
+    # Train meta model
     
-    # make all combining weights sum to a unit 
-    
-  {  # learning weights using ridge regression
-    
-    if (metalearner=="Ridge"){
+    if (normalize)
       
-      ridge.model <- lapply(1:length(stackmeta$metadata), function(x) glmnet::glmnet(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 0))
+      # make all combining weights sum to a unit 
       
-      cv_ridge <- lapply(1:length(stackmeta$metadata), function(x) glmnet::cv.glmnet(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 0))
+    {  # learning weights using ridge regression
       
-      coeffients <- lapply(1:length(stackmeta$metadata), function(x) coef(ridge.model[[x]], s = cv_ridge[[x]]$lambda.min)[-1])
+      if (metalearner=="Ridge"){
+        
+        ridge.model <- lapply(1:length(metadata$metadata), function(x) glmnet::glmnet(metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])], alpha = 0))
+        
+        cv_ridge <- lapply(1:length(metadata$metadata), function(x) glmnet::cv.glmnet(metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])], alpha = 0))
+        
+        coeffients <- lapply(1:length(metadata$metadata), function(x) coef(ridge.model[[x]], s = cv_ridge[[x]]$lambda.min)[-1])
+        
+        weights_ridge <- lapply(1:length(metadata$metadata), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
+        
+        weights1_ridge <-  lapply(1:length(metadata$metadata), function(x) data.frame(h = x, model.weights = weights_ridge[[x]]))
+        
+        weightsDF_ridge <- dplyr::bind_rows(lapply(weights1_ridge, function(x) x %>%dplyr::mutate(model = metadata$models)))
+        
+        result <- structure(list(weights =  weightsDF_ridge, metalearner = "Ridge", comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+        
+      }
       
-      weights_ridge <- lapply(1:length(stackmeta$metadata), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
+      # learning weights using lasso regression
       
-      weights1_ridge <-  lapply(1:length(stackmeta$metadata), function(x) data.frame(h = x, model.weights = weights_ridge[[x]]))
+      else if (metalearner=="Lasso"){
+        
+        lasso.model <- lapply(1:length(metadata$metadata), function(x) glmnet::glmnet(metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])], alpha = 1))
+        
+        cv_lasso <- lapply(1:length(metadata$metadata), function(x) glmnet::cv.glmnet( metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])], alpha = 1))
+        
+        coeffients <- lapply(1:length(metadata$metadata), function(x) coef(lasso.model[[x]], s = cv_lasso[[x]]$lambda.min)[-1])
+        
+        weights_lasso <- lapply(1:length(metadata$metadata), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
+        
+        weights1_lasso <-  lapply(1:length(metadata$metadata), function(x) data.frame(h = x, model.weights = weights_lasso[[x]]))
+        
+        weightsDF_lasso <- dplyr::bind_rows(lapply(weights1_lasso, function(x) x %>% dplyr::mutate(model = metadata$models)))
+        
+        result <- structure(list(weights =  weightsDF_lasso, metalearner = "Lasso", comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+        
+      }
       
-      weightsDF_ridge <- dplyr::bind_rows(lapply(weights1_ridge, function(x) x %>%dplyr::mutate(model = stackmeta$models)))
+      # learning weights using elastic net regression
       
-      result <- structure(list(weights =  weightsDF_ridge, metalearner = "Ridge", comb.method = "stack"))
+      else if (metalearner=="Elastic"){
+        
+        elastic.model <- lapply(1:length(metadata$metadata), function(x) glmnet::glmnet(metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])], alpha = 0.5))
+        
+        cv_elnet <- lapply(1:length(metadata$metadata), function(x) glmnet::cv.glmnet(metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])], alpha = 0.5))
+        
+        coeffients <- lapply(1:length(metadata$metadata), function(x) coef(elastic.model[[x]], s = cv_elnet[[x]]$lambda.min)[-1])
+        
+        weights_elastic <- lapply(1:length(metadata$metadata), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
+        
+        weights1_elastic <-  lapply(1:length(metadata$metadata), function(x) data.frame(h = x, model.weights = weights_elastic[[x]]))
+        
+        weightsDF_elastic <- dplyr::bind_rows(lapply(weights1_elastic, function(x) x %>% dplyr::mutate(model = metadata$models)))
+        
+        result <- structure(list(weights =  weightsDF_elastic, metalearner = "Elastic", comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+        
+      }
       
-      class(result) <- "weight"
+      # learning weights using non-negative least square regression
       
-      return(result)
+      else if(metalearner=="nnls") {
+        
+        coeffients <-lapply(1:length(metadata$metadata), function(x) nnls::nnls(metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])])$x)
+        
+        weights_nnls <- lapply(1:length(1:length(metadata$metadata)), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
+        
+        weights1_nnls <-  lapply(1:length(1:length(metadata$metadata)), function(x) data.frame(h = x,  model.weights = weights_nnls[[x]]))
+        
+        weightsDF_nnls <- dplyr::bind_rows(lapply(weights1_nnls, function(x) x %>% dplyr::mutate(model = metadata$models)))
+        
+        result <- structure(list(weights = weightsDF_nnls, metalearner = "nnls", comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+        
+      }
+      
+      # learning weights using standard linear squared regression
+      
+      else if (metalearner=="Linear"){
+        
+        linear.model <- lapply(1:length(metadata$metadata), function(x) lm(rate~., data =  as.data.frame(metadata$metadata[[x]])))
+        
+        coeffients <- lapply(1:length(metadata$metadata), function(x) unname(coef(linear.model[[x]])[-1]))
+        
+        weights_linear <- lapply(1:length(metadata$metadata), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
+        
+        weights1_linear <- lapply(1:length(metadata$metadata), function(x) data.frame(h = x, model.weights = weights_linear[[x]]))
+        
+        weightsDF_linear <- dplyr::bind_rows(lapply(weights1_linear, function(x) x %>% dplyr::mutate(model = metadata$models)))
+        
+        result <- structure(list(weights = weightsDF_linear,  metalearner = "Linear", comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+        
+      }
       
     }
     
-    # learning weights using lasso regression
-    
-    else if (metalearner=="Lasso"){
+    else if (!normalize)
       
-      lasso.model <- lapply(1:length(stackmeta$metadata), function(x) glmnet::glmnet(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 1))
+    { # not necessary the combining weights sum to a unit 
       
-      cv_lasso <- lapply(1:length(stackmeta$metadata), function(x) glmnet::cv.glmnet( stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 1))
+      # learning weights using ridge regression
       
-      coeffients <- lapply(1:length(stackmeta$metadata), function(x) coef(lasso.model[[x]], s = cv_lasso[[x]]$lambda.min)[-1])
+      if (metalearner=="Ridge"){
+        
+        ridge.model <- lapply(1:length(metadata$metadata), function(x) glmnet::glmnet(metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])], alpha = 0))
+        
+        cv_ridge <- lapply(1:length(metadata$metadata), function(x) glmnet::cv.glmnet(metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])], alpha = 0))
+        
+        coeffients <- lapply(1:length(metadata$metadata), function(x) coef(ridge.model[[x]], s = cv_ridge[[x]]$lambda.min)[-1])
+        
+        weights_ridge <- lapply(1:length(metadata$metadata), function(x) as.matrix(coeffients[[x]]))
+        
+        weights1_ridge <-  lapply(1:length(metadata$metadata), function(x) data.frame(h = x, model.weights = weights_ridge[[x]]))
+        
+        weightsDF_ridge <- dplyr::bind_rows(lapply(weights1_ridge, function(x) x %>%dplyr::mutate(model = metadata$models)))
+        
+        result <- structure(list(weights =  weightsDF_ridge, metalearner = "Ridge", comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+        
+      }
       
-      weights_lasso <- lapply(1:length(stackmeta$metadata), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
+      # learning weights using lasso regression
       
-      weights1_lasso <-  lapply(1:length(stackmeta$metadata), function(x) data.frame(h = x, model.weights = weights_lasso[[x]]))
+      else if (metalearner=="Lasso"){
+        
+        lasso.model <- lapply(1:length(metadata$metadata), function(x) glmnet::glmnet(metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])], alpha = 1))
+        
+        cv_lasso <- lapply(1:length(metadata$metadata), function(x) glmnet::cv.glmnet(metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])], alpha = 1))
+        
+        coeffients <- lapply(1:length(metadata$metadata), function(x) coef(lasso.model[[x]], s = cv_lasso[[x]]$lambda.min)[-1])
+        
+        weights_lasso <- lapply(1:length(metadata$metadata), function(x) as.matrix(coeffients[[x]]))
+        
+        weights1_lasso <-  lapply(1:length(metadata$metadata), function(x) data.frame(h = x, model.weights = weights_lasso[[x]]))
+        
+        weightsDF_lasso <- dplyr::bind_rows(lapply(weights1_lasso, function(x) x %>% dplyr::mutate(model = metadata$models)))
+        
+        result <- structure(list(weights =  weightsDF_lasso, metalearner = "Lasso", comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+        
+      }
       
-      weightsDF_lasso <- dplyr::bind_rows(lapply(weights1_lasso, function(x) x %>% dplyr::mutate(model = stackmeta$models)))
+      # learning weights using elastic net regression
       
-      result <- structure(list(weights =  weightsDF_lasso, metalearner = "Lasso", comb.method = "stack"))
+      else if (metalearner=="Elastic"){
+        
+        elastic.model <- lapply(1:length(metadata$metadata), function(x) glmnet::glmnet(metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])], alpha = 0.5))
+        
+        cv_elnet <- lapply(1:length(metadata$metadata), function(x) glmnet::cv.glmnet(metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])], alpha = 0.5))
+        
+        coeffients <- lapply(1:length(metadata$metadata), function(x) coef(elastic.model[[x]], s = cv_elnet[[x]]$lambda.min)[-1])
+        
+        weights_elastic <- lapply(1:length(metadata$metadata), function(x) as.matrix(coeffients[[x]]))
+        
+        weights1_elastic <-  lapply(1:length(metadata$metadata), function(x) data.frame(h = x, model.weights = weights_elastic[[x]]))
+        
+        weightsDF_elastic <- dplyr::bind_rows(lapply(weights1_elastic, function(x) x %>% dplyr::mutate(model =metadata$models)))
+        
+        result <- structure(list(weights =  weightsDF_elastic, metalearner = "Elastic",  comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+        
+      }
       
-      class(result) <- "weight"
+      # learning weights using non-negative least squared regression
       
-      return(result)
+      else if(metalearner=="nnls") {
+        
+        coeffients <-lapply(1:length(metadata$metadata), function(x) nnls::nnls(metadata$metadata[[x]][,1:length(metadata$models)], metadata$metadata[[x]][,ncol(metadata$metadata[[x]])])$x)
+        
+        weights_nnls <- lapply(1:length(metadata$metadata), function(x) as.matrix(coeffients[[x]]))
+        
+        weights1_nnls <-  lapply(1:length(metadata$metadata), function(x) data.frame(h = x,  model.weights = weights_nnls[[x]]))
+        
+        weightsDF_nnls <- dplyr::bind_rows(lapply(weights1_nnls, function(x) x %>% dplyr::mutate(model = metadata$models)))
+        
+        result <- structure(list(weights = weightsDF_nnls, metalearner = "nnls", comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+      }
       
-    }
-    
-    # learning weights using elastic net regression
-    
-    else if (metalearner=="Elastic"){
+      # learning weights using standard linear squared regression
       
-      elastic.model <- lapply(1:length(stackmeta$metadata), function(x) glmnet::glmnet(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 0.5))
-      
-      cv_elnet <- lapply(1:length(stackmeta$metadata), function(x) glmnet::cv.glmnet(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 0.5))
-      
-      coeffients <- lapply(1:length(stackmeta$metadata), function(x) coef(elastic.model[[x]], s = cv_elnet[[x]]$lambda.min)[-1])
-      
-      weights_elastic <- lapply(1:length(stackmeta$metadata), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
-      
-      weights1_elastic <-  lapply(1:length(stackmeta$metadata), function(x) data.frame(h = x, model.weights = weights_elastic[[x]]))
-      
-      weightsDF_elastic <- dplyr::bind_rows(lapply(weights1_elastic, function(x) x %>% dplyr::mutate(model = stackmeta$models)))
-      
-      result <- structure(list(weights =  weightsDF_elastic, metalearner = "Elastic", comb.method = "stack"))
-      
-      class(result) <- "weight"
-      
-      return(result)
-      
-    }
-    
-    # learning weights using non-negative least square regression
-    
-    else if(metalearner=="nnls") {
-      
-      coeffients <-lapply(1:length(stackmeta$metadata), function(x) nnls::nnls(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])])$x)
-      
-      weights_nnls <- lapply(1:length(1:length(stackmeta$metadata)), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
-      
-      weights1_nnls <-  lapply(1:length(1:length(stackmeta$metadata)), function(x) data.frame(h = x,  model.weights = weights_nnls[[x]]))
-      
-      weightsDF_nnls <- dplyr::bind_rows(lapply(weights1_nnls, function(x) x %>% dplyr::mutate(model = stackmeta$models)))
-      
-      result <- structure(list(weights = weightsDF_nnls, metalearner = "nnls", comb.method = "stack"))
-      
-      class(result) <- "weight"
-      
-      return(result)
-      
-    }
-    
-    # learning weights using standard linear squared regression
-    
-    else if (metalearner=="Linear"){
-      
-      linear.model <- lapply(1:length(stackmeta$metadata), function(x) lm(rate~., data =  as.data.frame(stackmeta$metadata[[x]])))
-      
-      coeffients <- lapply(1:length(stackmeta$metadata), function(x) unname(coef(linear.model[[x]])[-1]))
-      
-      weights_linear <- lapply(1:length(stackmeta$metadata), function(x) as.matrix(coeffients[[x]]/sum(coeffients[[x]])))
-      
-      weights1_linear <- lapply(1:length(stackmeta$metadata), function(x) data.frame(h = x, model.weights = weights_linear[[x]]))
-      
-      weightsDF_linear <- dplyr::bind_rows(lapply(weights1_linear, function(x) x %>% dplyr::mutate(model = stackmeta$models)))
-      
-      result <- structure(list(weights = weightsDF_linear,  metalearner = "Linear", comb.method = "stack"))
-      
-      class(result) <- "weight"
-      
-      return(result)
-      
-    }
-    
-  }
-  
-  else if (!normalize)
-    
-  { # not necessary the combining weights sum to a unit 
-    
-    # learning weights using ridge regression
-    
-    if (metalearner=="Ridge"){
-      
-      ridge.model <- lapply(1:length(stackmeta$metadata), function(x) glmnet::glmnet(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 0))
-      
-      cv_ridge <- lapply(1:length(stackmeta$metadata), function(x) glmnet::cv.glmnet(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 0))
-      
-      coeffients <- lapply(1:length(stackmeta$metadata), function(x) coef(ridge.model[[x]], s = cv_ridge[[x]]$lambda.min)[-1])
-      
-      weights_ridge <- lapply(1:length(stackmeta$metadata), function(x) as.matrix(coeffients[[x]]))
-      
-      weights1_ridge <-  lapply(1:length(stackmeta$metadata), function(x) data.frame(h = x, model.weights = weights_ridge[[x]]))
-      
-      weightsDF_ridge <- dplyr::bind_rows(lapply(weights1_ridge, function(x) x %>%dplyr::mutate(model = stackmeta$models)))
-      
-      result <- structure(list(weights =  weightsDF_ridge, metalearner = "Ridge", comb.method = "stack"))
-      
-      class(result) <- "weight"
-      
-      return(result)
-      
-    }
-    
-    # learning weights using lasso regression
-    
-    else if (metalearner=="Lasso"){
-      
-      lasso.model <- lapply(1:length(stackmeta$metadata), function(x) glmnet::glmnet(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 1))
-      
-      cv_lasso <- lapply(1:length(stackmeta$metadata), function(x) glmnet::cv.glmnet(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 1))
-      
-      coeffients <- lapply(1:length(stackmeta$metadata), function(x) coef(lasso.model[[x]], s = cv_lasso[[x]]$lambda.min)[-1])
-      
-      weights_lasso <- lapply(1:length(stackmeta$metadata), function(x) as.matrix(coeffients[[x]]))
-      
-      weights1_lasso <-  lapply(1:length(stackmeta$metadata), function(x) data.frame(h = x, model.weights = weights_lasso[[x]]))
-      
-      weightsDF_lasso <- dplyr::bind_rows(lapply(weights1_lasso, function(x) x %>% dplyr::mutate(model = stackmeta$models)))
-      
-      result <- structure(list(weights =  weightsDF_lasso, metalearner = "Lasso", comb.method = "stack"))
-      
-      class(result) <- "weight"
-      
-      return(result)
+      else if (metalearner=="Linear"){
+        
+        linear.model <- lapply(1:length(metadata$metadata), function(x) lm(rate~., data =  as.data.frame(metadata$metadata[[x]])))
+        
+        coeffients <- lapply(1:length(metadata$metadata), function(x) unname(coef(linear.model[[x]])[-1]))
+        
+        weights_linear <- lapply(1:length(metadata$metadata), function(x) as.matrix(coeffients[[x]]))
+        
+        weights1_linear <- lapply(1:length(metadata$metadata), function(x) data.frame(h = x, model.weights = weights_linear[[x]]))
+        
+        weightsDF_linear <- dplyr::bind_rows(lapply(weights1_linear, function(x) x %>% dplyr::mutate(model =metadata$models)))
+        
+        result <- structure(list(weights = weightsDF_linear,  metalearner = "Linear", comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+        
+      }
       
     }
     
-    # learning weights using elastic net regression
-    
-    else if (metalearner=="Elastic"){
-      
-      elastic.model <- lapply(1:length(stackmeta$metadata), function(x) glmnet::glmnet(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 0.5))
-      
-      cv_elnet <- lapply(1:length(stackmeta$metadata), function(x) glmnet::cv.glmnet(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])], alpha = 0.5))
-      
-      coeffients <- lapply(1:length(stackmeta$metadata), function(x) coef(elastic.model[[x]], s = cv_elnet[[x]]$lambda.min)[-1])
-      
-      weights_elastic <- lapply(1:length(stackmeta$metadata), function(x) as.matrix(coeffients[[x]]))
-      
-      weights1_elastic <-  lapply(1:length(stackmeta$metadata), function(x) data.frame(h = x, model.weights = weights_elastic[[x]]))
-      
-      weightsDF_elastic <- dplyr::bind_rows(lapply(weights1_elastic, function(x) x %>% dplyr::mutate(model =stackmeta$models)))
-      
-      result <- structure(list(weights =  weightsDF_elastic, metalearner = "Elastic",  comb.method = "stack"))
-      
-      class(result) <- "weight"
-      
-      return(result)
-      
-    }
-    
-    # learning weights using non-negative least squared regression
-    
-    else if(metalearner=="nnls") {
-      
-      coeffients <-lapply(1:length(stackmeta$metadata), function(x) nnls::nnls(stackmeta$metadata[[x]][,1:length(stackmeta$models)], stackmeta$metadata[[x]][,ncol(stackmeta$metadata[[x]])])$x)
-      
-      weights_nnls <- lapply(1:length(stackmeta$metadata), function(x) as.matrix(coeffients[[x]]))
-      
-      weights1_nnls <-  lapply(1:length(stackmeta$metadata), function(x) data.frame(h = x,  model.weights = weights_nnls[[x]]))
-      
-      weightsDF_nnls <- dplyr::bind_rows(lapply(weights1_nnls, function(x) x %>% dplyr::mutate(model = stackmeta$models)))
-      
-      result <- structure(list(weights = weightsDF_nnls, metalearner = "nnls", comb.method = "stack"))
-      
-      class(result) <- "weight"
-      
-      return(result)
-    }
-    
-    # learning weights using standard linear squared regression
-    
-    else if (metalearner=="Linear"){
-      
-      linear.model <- lapply(1:length(stackmeta$metadata), function(x) lm(rate~., data =  as.data.frame(stackmeta$metadata[[x]])))
-      
-      coeffients <- lapply(1:length(stackmeta$metadata), function(x) unname(coef(linear.model[[x]])[-1]))
-      
-      weights_linear <- lapply(1:length(stackmeta$metadata), function(x) as.matrix(coeffients[[x]]))
-      
-      weights1_linear <- lapply(1:length(stackmeta$metadata), function(x) data.frame(h = x, model.weights = weights_linear[[x]]))
-      
-      weightsDF_linear <- dplyr::bind_rows(lapply(weights1_linear, function(x) x %>% dplyr::mutate(model =stackmeta$models)))
-      
-      result <- structure(list(weights = weightsDF_linear,  metalearner = "Linear", comb.method = "stack"))
-      
-      class(result) <- "weight"
-      
-      return(result)
-      
-    }
-    
-  }
-  
   }
   
   else if (!dynamic)
@@ -594,12 +594,12 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
   {
     Datalist <- list()
     
-    h <- length(stackmeta$metadata)
+    h <- length(metadata$metadata)
     
     for (i in 1:h)
       
     { 
-      Datalist[[i]] <- stackmeta$metadata[[i]]
+      Datalist[[i]] <- metadata$metadata[[i]]
       
     }
     
@@ -626,10 +626,10 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
         coeffients <- coef(ridge.model, s = cv_ridge$lambda.min)[-1]
         weights_ridge <- as.matrix(coeffients/sum(coeffients))
         
-        weightsDF_ridge <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_ridge)), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 1, 2)]
+        weightsDF_ridge <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_ridge)), h), function(x) x %>% dplyr::mutate(model = metadata$models)))%>%mutate(h = rep(1:h, each = length(metadata$models))))[,c(3, 1, 2)]
         
         names(weightsDF_ridge)[2] <- "model.weights"
-                                                    
+        
         result <- structure(list(weights = weightsDF_ridge,  metalearner = "Ridge", comb.method = "stack"))
         
         class(result) <- "weight"
@@ -644,10 +644,10 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
         coeffients <- coef(lasso.model, s = cv_lasso$lambda.min)[-1]
         weights_lasso <- as.matrix(coeffients/sum(coeffients))
         
-        weightsDF_lasso <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_lasso)), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 1, 2)]
+        weightsDF_lasso <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_lasso)), h), function(x) x %>% dplyr::mutate(model = metadata$models)))%>%mutate(h = rep(1:h, each = length(metadata$models))))[,c(3, 1, 2)]
         
         names(weightsDF_lasso)[2] <- "model.weights"
-                                                    
+        
         result <- structure(list(weights = weightsDF_lasso,  metalearner = "Lasso", comb.method = "stack"))
         
         class(result) <- "weight"
@@ -664,10 +664,10 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
         coeffients <- coef(elastic.model, s = cv_elnet$lambda.min)[-1]
         weights_elastic <- as.matrix(coeffients/sum(coeffients))
         
-        weightsDF_elastic <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_elastic)), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 1, 2)]
+        weightsDF_elastic <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_elastic)), h), function(x) x %>% dplyr::mutate(model = metadata$models)))%>%mutate(h = rep(1:h, each = length(metadata$models))))[,c(3, 1, 2)]
         
         names(weightsDF_elastic)[2] <- "model.weights"
-                                                    
+        
         result <- structure(list(weights = weightsDF_elastic,  metalearner = "Elastic", comb.method = "stack"))
         
         class(result) <- "weight"
@@ -680,11 +680,11 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
         
         coeffients <- nnls(xtrain, ytrain)$x
         weights_nnls <- as.matrix(coeffients/sum(coeffients))
-           
-        weightsDF_nnls <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_nnls)), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 1, 2)]
+        
+        weightsDF_nnls <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_nnls)), h), function(x) x %>% dplyr::mutate(model = metadata$models)))%>%mutate(h = rep(1:h, each = length(metadata$models))))[,c(3, 1, 2)]
         
         names( weightsDF_nnls)[2] <- "model.weights"
-                                                    
+        
         result <- structure(list(weights =  weightsDF_nnls,  metalearner = "Elastic", comb.method = "stack"))
         
         class(result) <- "weight"
@@ -699,10 +699,10 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
         coeffients <- unname(coef(linear.model)[-1])
         weights_linear <- as.matrix(coeffients/sum(coeffients))
         
-        weightsDF_linear <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_linear)), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 1, 2)]
+        weightsDF_linear <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_linear)), h), function(x) x %>% dplyr::mutate(model = metadata$models)))%>%mutate(h = rep(1:h, each = length(metadata$models))))[,c(3, 1, 2)]
         
         names(weightsDF_linear)[2] <- "model.weights"
-                                                    
+        
         result <- structure(list(weights =  weightsDF_linear,  metalearner = "Linear", comb.method = "stack"))
         
         class(result) <- "weight"
@@ -714,101 +714,101 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
     }
     
     else if (!normalize)
-    
+      
     {
-    
-    if (metalearner=="Ridge"){
       
-      ridge.model <- glmnet(xtrain, ytrain, alpha = 0)
-      cv_ridge <- cv.glmnet(xtrain, ytrain, alpha = 0)
-      coeffients <- coef(ridge.model, s = cv_ridge$lambda.min)[-1]
-      weights_ridge <- as.matrix(coeffients)
-      
-      weightsDF_ridge <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_ridge)), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 1, 2)]
+      if (metalearner=="Ridge"){
         
-      names(weightsDF_ridge)[2] <- "model.weights"
-                                                    
-      result <- structure(list(weights = weightsDF_ridge,  metalearner = "Ridge", comb.method = "stack"))
+        ridge.model <- glmnet(xtrain, ytrain, alpha = 0)
+        cv_ridge <- cv.glmnet(xtrain, ytrain, alpha = 0)
+        coeffients <- coef(ridge.model, s = cv_ridge$lambda.min)[-1]
+        weights_ridge <- as.matrix(coeffients)
         
-      class(result) <- "weight"
+        weightsDF_ridge <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_ridge)), h), function(x) x %>% dplyr::mutate(model = metadata$models)))%>%mutate(h = rep(1:h, each = length(metadata$models))))[,c(3, 1, 2)]
         
-      return(result)
-      
-      
-    }
-    
-    else if (metalearner=="Lasso"){
-      
-      lasso.model <- glmnet(xtrain, ytrain, alpha = 1)
-      cv_lasso <- cv.glmnet(xtrain, ytrain, alpha = 1)
-      coeffients <- coef(lasso.model, s = cv_lasso$lambda.min)[-1]
-      weights_lasso <- as.matrix(coeffients)
-      
-      weightsDF_lasso <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_lasso)), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 1, 2)]
+        names(weightsDF_ridge)[2] <- "model.weights"
         
-       names(weightsDF_lasso)[2] <- "model.weights"
-                                                    
-      result <- structure(list(weights = weightsDF_lasso,  metalearner = "Lasso", comb.method = "stack"))
+        result <- structure(list(weights = weightsDF_ridge,  metalearner = "Ridge", comb.method = "stack"))
         
-      class(result) <- "weight"
+        class(result) <- "weight"
         
-     return(result)
-    }
-    
-    else if (metalearner=="Elastic"){
-      
-      
-      elastic.model <- glmnet(xtrain, ytrain, alpha = 0.5)
-      cv_elnet <- cv.glmnet(xtrain, ytrain, alpha = 0.5)
-      coeffients <- coef(elastic.model, s = cv_elnet$lambda.min)[-1]
-      weights_elastic <- as.matrix(coeffients)
-      
-      weightsDF_elastic <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_elastic)), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 1, 2)]
+        return(result)
         
-      names(weightsDF_elastic)[2] <- "model.weights"
-                                                    
-      result <- structure(list(weights = weightsDF_elastic,  metalearner = "Elastic", comb.method = "stack"))
         
-      class(result) <- "weight"
-        
-      return(result)
-      
-    }
-    
-    else if(metalearner=="nnls") {
-      
-      coeffients <- nnls(xtrain, ytrain)$x
-      weights_nnls <- as.matrix(coeffients)
-      
-      weightsDF_nnls <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_nnls)), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 1, 2)]
-        
-      names( weightsDF_nnls)[2] <- "model.weights"
-                                                    
-      result <- structure(list(weights =  weightsDF_nnls,  metalearner = "Elastic", comb.method = "stack"))
-        
-      class(result) <- "weight"
-        
-      return(result)
-    }
-    
-    else if (metalearner=="Linear"){
-      
-      linear.model <- lm(rate~., data =  as.data.frame(Data))
-      coeffients <- unname(coef(linear.model)[-1])
-      weights_linear <- as.matrix(coeffients)
-      
-      weightsDF_linear <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_linear)), h), function(x) x %>% dplyr::mutate(model = stackmeta$models)))%>%mutate(h = rep(1:h, each = length(stackmeta$models))))[,c(3, 1, 2)]
-        
-      names(weightsDF_linear)[2] <- "model.weights"
-                                                    
-      result <- structure(list(weights =   weightsDF_linear,  metalearner = "Linear", comb.method = "stack"))
-        
-      class(result) <- "weight"
-        
-      return(result)
-      
       }
-     }
+      
+      else if (metalearner=="Lasso"){
+        
+        lasso.model <- glmnet(xtrain, ytrain, alpha = 1)
+        cv_lasso <- cv.glmnet(xtrain, ytrain, alpha = 1)
+        coeffients <- coef(lasso.model, s = cv_lasso$lambda.min)[-1]
+        weights_lasso <- as.matrix(coeffients)
+        
+        weightsDF_lasso <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_lasso)), h), function(x) x %>% dplyr::mutate(model = metadata$models)))%>%mutate(h = rep(1:h, each = length(metadata$models))))[,c(3, 1, 2)]
+        
+        names(weightsDF_lasso)[2] <- "model.weights"
+        
+        result <- structure(list(weights = weightsDF_lasso,  metalearner = "Lasso", comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+      }
+      
+      else if (metalearner=="Elastic"){
+        
+        
+        elastic.model <- glmnet(xtrain, ytrain, alpha = 0.5)
+        cv_elnet <- cv.glmnet(xtrain, ytrain, alpha = 0.5)
+        coeffients <- coef(elastic.model, s = cv_elnet$lambda.min)[-1]
+        weights_elastic <- as.matrix(coeffients)
+        
+        weightsDF_elastic <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_elastic)), h), function(x) x %>% dplyr::mutate(model = metadata$models)))%>%mutate(h = rep(1:h, each = length(metadata$models))))[,c(3, 1, 2)]
+        
+        names(weightsDF_elastic)[2] <- "model.weights"
+        
+        result <- structure(list(weights = weightsDF_elastic,  metalearner = "Elastic", comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+        
+      }
+      
+      else if(metalearner=="nnls") {
+        
+        coeffients <- nnls(xtrain, ytrain)$x
+        weights_nnls <- as.matrix(coeffients)
+        
+        weightsDF_nnls <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_nnls)), h), function(x) x %>% dplyr::mutate(model = metadata$models)))%>%mutate(h = rep(1:h, each = length(metadata$models))))[,c(3, 1, 2)]
+        
+        names( weightsDF_nnls)[2] <- "model.weights"
+        
+        result <- structure(list(weights =  weightsDF_nnls,  metalearner = "Elastic", comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+      }
+      
+      else if (metalearner=="Linear"){
+        
+        linear.model <- lm(rate~., data =  as.data.frame(Data))
+        coeffients <- unname(coef(linear.model)[-1])
+        weights_linear <- as.matrix(coeffients)
+        
+        weightsDF_linear <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_linear)), h), function(x) x %>% dplyr::mutate(model = metadata$models)))%>%mutate(h = rep(1:h, each = length(metadata$models))))[,c(3, 1, 2)]
+        
+        names(weightsDF_linear)[2] <- "model.weights"
+        
+        result <- structure(list(weights =   weightsDF_linear,  metalearner = "Linear", comb.method = "stack"))
+        
+        class(result) <- "weight"
+        
+        return(result)
+        
+      }
+    }
   }
 }
 
