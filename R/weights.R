@@ -605,14 +605,10 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
     
     Data <- do.call(rbind, Datalist)
     
-    xtrain <- as_tibble(Data)%>%dplyr::select(-rate) %>% as.matrix()
+    xtrain <- tibble::as_tibble(Data)%>%dplyr::select(-rate) %>% as.matrix()
     
-    ytrain <- as_tibble(Data)%>%dplyr::select(rate) %>% as.matrix()
-    
-    y <- ytrain
-    
-    data_train <- data.frame(y, xtrain)
-    
+    ytrain <- tibble::as_tibble(Data)%>%dplyr::select(rate) %>% as.matrix()
+       
     # Train meta model
     
     if (normalize) 
@@ -621,8 +617,8 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
       
       if (metalearner=="Ridge"){
         
-        ridge.model <- glmnet(xtrain, ytrain, alpha = 0)
-        cv_ridge <- cv.glmnet(xtrain, ytrain, alpha = 0)
+        ridge.model <- glmnet::glmnet(xtrain, ytrain, alpha = 0)
+        cv_ridge <- glmnet::cv.glmnet(xtrain, ytrain, alpha = 0)
         coeffients <- coef(ridge.model, s = cv_ridge$lambda.min)[-1]
         weights_ridge <- as.matrix(coeffients/sum(coeffients))
         
@@ -639,8 +635,8 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
       
       else if (metalearner=="Lasso"){
         
-        lasso.model <- glmnet(xtrain, ytrain, alpha = 1)
-        cv_lasso <- cv.glmnet(xtrain, ytrain, alpha = 1)
+        lasso.model <- glmnet::glmnet(xtrain, ytrain, alpha = 1)
+        cv_lasso <- glmnet::cv.glmnet(xtrain, ytrain, alpha = 1)
         coeffients <- coef(lasso.model, s = cv_lasso$lambda.min)[-1]
         weights_lasso <- as.matrix(coeffients/sum(coeffients))
         
@@ -659,8 +655,8 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
       else if (metalearner=="Elastic"){
         
         
-        elastic.model <- glmnet(xtrain, ytrain, alpha = 0.5)
-        cv_elnet <- cv.glmnet(xtrain, ytrain, alpha = 0.5)
+        elastic.model <- glmnet::glmnet(xtrain, ytrain, alpha = 0.5)
+        cv_elnet <- glmnet::cv.glmnet(xtrain, ytrain, alpha = 0.5)
         coeffients <- coef(elastic.model, s = cv_elnet$lambda.min)[-1]
         weights_elastic <- as.matrix(coeffients/sum(coeffients))
         
@@ -678,7 +674,7 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
       
       else if(metalearner=="nnls") {
         
-        coeffients <- nnls(xtrain, ytrain)$x
+        coeffients <- nnls::nnls(xtrain, ytrain)$x
         weights_nnls <- as.matrix(coeffients/sum(coeffients))
         
         weightsDF_nnls <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_nnls)), h), function(x) x %>% dplyr::mutate(model = metadata$models)))%>%mutate(h = rep(1:h, each = length(metadata$models))))[,c(3, 1, 2)]
@@ -719,8 +715,8 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
       
       if (metalearner=="Ridge"){
         
-        ridge.model <- glmnet(xtrain, ytrain, alpha = 0)
-        cv_ridge <- cv.glmnet(xtrain, ytrain, alpha = 0)
+        ridge.model <- glmnet::glmnet(xtrain, ytrain, alpha = 0)
+        cv_ridge <- glmnet::cv.glmnet(xtrain, ytrain, alpha = 0)
         coeffients <- coef(ridge.model, s = cv_ridge$lambda.min)[-1]
         weights_ridge <- as.matrix(coeffients)
         
@@ -739,8 +735,8 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
       
       else if (metalearner=="Lasso"){
         
-        lasso.model <- glmnet(xtrain, ytrain, alpha = 1)
-        cv_lasso <- cv.glmnet(xtrain, ytrain, alpha = 1)
+        lasso.model <- glmnet::glmnet(xtrain, ytrain, alpha = 1)
+        cv_lasso <- glmnet::cv.glmnet(xtrain, ytrain, alpha = 1)
         coeffients <- coef(lasso.model, s = cv_lasso$lambda.min)[-1]
         weights_lasso <- as.matrix(coeffients)
         
@@ -758,8 +754,8 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
       else if (metalearner=="Elastic"){
         
         
-        elastic.model <- glmnet(xtrain, ytrain, alpha = 0.5)
-        cv_elnet <- cv.glmnet(xtrain, ytrain, alpha = 0.5)
+        elastic.model <- glmnet::glmnet(xtrain, ytrain, alpha = 0.5)
+        cv_elnet <- glmnet::cv.glmnet(xtrain, ytrain, alpha = 0.5)
         coeffients <- coef(elastic.model, s = cv_elnet$lambda.min)[-1]
         weights_elastic <- as.matrix(coeffients)
         
@@ -777,7 +773,7 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
       
       else if(metalearner=="nnls") {
         
-        coeffients <- nnls(xtrain, ytrain)$x
+        coeffients <- nnls::nnls(xtrain, ytrain)$x
         weights_nnls <- as.matrix(coeffients)
         
         weightsDF_nnls <- (dplyr::bind_rows(lapply(rep(list(as.data.frame(weights_nnls)), h), function(x) x %>% dplyr::mutate(model = metadata$models)))%>%mutate(h = rep(1:h, each = length(metadata$models))))[,c(3, 1, 2)]
