@@ -3,7 +3,7 @@
 S3method(forecast,CoMoMo)
 S3method(forecast,CoMoMo.simple)
 S3method(plot,weight)
-S3method(stack,stackmeta)
+S3method(stack,metadata)
 export(CoMoMo)
 export(bma)
 export(cvloss)
