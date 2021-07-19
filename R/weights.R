@@ -331,14 +331,14 @@ bma <- function(models, method = "cv", data = NULL, Dxt = NULL, Ext = NULL, ages
 #' @export
 #'
 #'
-stack  <- function(stackmeta,...) {
+stack  <- function(metadata,...) {
   UseMethod("stack")
 }
 
 #'
 #' @export
 #'
-stack.stackmeta <- function(stackmeta, metalearner = "nnls", normalize = TRUE, dynamic = TRUE)
+stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dynamic = TRUE)
   
 { # the function calculate the weights using stacked regression. 
   
