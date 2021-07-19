@@ -85,7 +85,7 @@ metadata <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NUL
 
   result <- structure(list(metadata = data, cvmse = CVerror, models = names(models)))
 
-  class(result) <- "stackmeta"
+  class(result) <- "metadata"
 
   return(result)
 
