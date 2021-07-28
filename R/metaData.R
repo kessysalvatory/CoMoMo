@@ -59,12 +59,12 @@ metadata <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NUL
 
   if (h<0 || h!= as.integer(h)) stop("The forecast horizon h must be a positive integer.")
 
-  # checking the horizons that weights can be generated
-
-  if (h > (max(years.fit) - years.fit[1]-1)) {
-    stop("The time series must be longer than h.")
-  }
-
+  # Reasonability check between length of data set and forecasting horizon 
+ 
+  if (h > length(years.fit)/2) {
+  warning("Forecasting horizon is too large for data set supplied.")
+  } 
+ 
   # Check if more than one model is supplied
 
   if(length(models)<2) stop("Argument models needs to contain more than one model.")
