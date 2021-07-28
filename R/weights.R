@@ -15,38 +15,7 @@
 #' @details Stacked Regression Ensemble combines point forecasts from
 #' multiple base learners using the weights that optimize a
 #' cross-validation criterion.
-#'
-#' @param models are the specified list of models to be combined.
-#'
-#' @param h number of years for forecasting horizon.
-#'
-#' @param data an optional object of type StMoMoData containing
-#'
-#' information on deaths and exposures to be used for training the model.
-#'
-#' This is typically created with function \code{\link{StMoMoData}}.
-#'
-#' If this is not provided then the training data is taken from
-#'
-#' arguments, \code{Dxt}, \code{Ext}, \code{ages}, \code{years}.
-#'
-#' @param Dxt optional matrix of deaths data.
-#'
-#' @param Ext optional matrix of observed exposures of the same
-#' dimension of \code{Dxt}.
-#'
-#' @param ages optional vector of ages corresponding to rows of
-#' \code{Dxt} and \code{Ext}.
-#'
-#' @param years optional vector of years corresponding to rows of
-#' \code{Dxt} and \code{Ext}.
-#'
-#' @param ages.fit optional vector of ages to include in the
-#' training. Must be a subset of \code{ages}.
-#'
-#' @param years.fit optional vector of years to include in the
-#' training. Must be a subset of \code{years}.
-#'
+
 #' @export
 #'
 valloss <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NULL, years.fit = NULL, ages = NULL, years = NULL, holdout = NULL, h = NULL)
