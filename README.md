@@ -158,3 +158,50 @@ final <- forecast(modcom, h = 15)
 ## Questions 
 
 Please feel free to open an issue with any questions you may have. You can contact me at s.kessy@unsw.edu.au
+
+
+
+library(tea)
+library(gganimate)
+#> Loading required package: ggplot2
+library(ggthemes)
+library(tidyverse)
+#> -- Attaching packages --- tidyverse 1.2.1 --
+#> v tibble  2.1.1       v purrr   0.3.2  
+#> v tidyr   0.8.3       v dplyr   0.8.0.1
+#> v readr   1.3.1       v stringr 1.4.0  
+#> v tibble  2.1.1       v forcats 0.4.0
+#> -- Conflicts ------ tidyverse_conflicts() --
+#> x dplyr::filter() masks stats::filter()
+#> x dplyr::lag()    masks stats::lag()
+
+## Processing data
+tea_export <- tea %>%
+  gather(Year, Value, "2001":"2018", factor_key=TRUE) %>% 
+  group_by(Year) %>%
+  mutate(rank = min_rank(-Value) * 1) %>%
+  ungroup() %>%
+  filter(rank <= 20)
+
+
+## Visualization
+tea_plot <- ggplot(tea_export, aes(rank, group = Exporters, 
+                     fill = Exporters, color = Exporters)) +
+  geom_tile(aes(y = Value/2,
+                height = Value,
+                width = 0.9)) +
+  geom_text(aes(y = 0, label = paste(Exporters, " ")), vjust = 0.2, hjust = 1) +
+  coord_flip(clip = "off", expand = FALSE) +
+  scale_y_continuous(labels = scales::dollar) +
+  scale_x_reverse() +
+  guides(color = FALSE, fill = FALSE) +
+  labs(title='{closest_state}', x = "", y = "Tea exported value (US Dollar in thousand)",caption = "Source: Trade Map, International Trade Centre, https://marketanalysis.intracen.org.")+
+  theme(plot.title = element_text(hjust = 0, size = 22),
+        axis.ticks.y = element_blank(),  
+        axis.text.y  = element_blank(),  
+        plot.margin = margin(1,1,1,4, "cm")) +
+  transition_states(Year, transition_length = 4, state_length = 1) +
+  ease_aes('cubic-in-out')
+
+animate(tea_plot, fps = 25, duration = 20, width = 800, height = 600)
+
