@@ -31,6 +31,7 @@ library(CoMoMo)
 library(tibble)
 library(ggplot2)
 library(patchwork)
+library(gganimate)
 
 # Getting some data
 
