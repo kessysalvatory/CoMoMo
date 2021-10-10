@@ -32,6 +32,7 @@ library(tibble)
 library(ggplot2)
 library(patchwork)
 library(gganimate)
+library(directlabels)
 
 # Getting some data
 
@@ -90,7 +91,6 @@ dstack_nnls_weight <- stack(metaData, metalearner = "nnls", normalize = TRUE, dy
 dstack_linear_weight <- stack(metaData, metalearner = "Linear", normalize = TRUE, dynamic = FALSE)
 dstack_elastic_weight <- stack(metaData, metalearner = "Elastic", normalize = TRUE, dynamic = FALSE)
 
-
 # plot the weights 
 
 stack_ridge_plot <- plot(stack_ridge_weight)
@@ -98,6 +98,9 @@ stack_lasso_plot <- plot(stack_lasso_weight)
 stack_nnls_plot <- plot(stack_nnls_weight)
 stack_linear_plot <- plot(stack_linear_weight)
 stack_elastic_plot <- plot(stack_elastic_weight)
+stack_elastic_plot0<- directlabels::direct.label(stack_elastic_plot, list("last.points", cex = 1.0, fontface="bold"))
+stack_elastic_plot1 <- stack_elastic_plot0  + transition_reveal(h) + view_follow(fixed_y = TRUE) + ease_aes('cubic-in-out')  + enter_fade() + exit_shrink() + coord_cartesian(clip = 'off') + theme(plot.margin = margin(5.5, 100, 11, 5.5), legend.position = "none") + labs(title = 'h: #{frame_along}')
+animate(stack_elastic_plot1, fps = 3, nframes= 200, width= 1000, height=800)
 
 # use the Bayesian model averaging (bma) to estimate the weights
 # use single validation set appproach to estimate the weights 
