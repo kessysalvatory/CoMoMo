@@ -114,8 +114,10 @@ metadata <- function(models, data = NULL, Dxt = NULL, Ext = NULL, ages.fit = NUL
   data <- lapply(1:h, function(x) as.matrix(cbind(as.data.frame(xtrain[[x]]), rate =  ytrain[[x]])))
    
   diffdata <- lapply(1:h, function(x) diff(as.matrix(cbind(as.data.frame(xtrain[[x]]), rate =  ytrain[[x]]))))
+                     
+ # dmetadata = diffdata,
                  
-  result <- structure(list(metadata = data, dmetadata = diffdata, cvmse = CVerror, models = names(models)))
+  result <- structure(list(metadata = diffdata,  cvmse = CVerror, models = names(models)))
 
   class(result) <- "metadata"
 
