@@ -666,7 +666,7 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
         
         names( weightsDF_nnls)[2] <- "model.weights"
         
-        result <- structure(list(weights =  weightsDF_nnls,  metalearner = "Elastic", comb.method = "stack"))
+        result <- structure(list(weights =  weightsDF_nnls,  metalearner = "nnls", comb.method = "stack"))
         
         class(result) <- "weight"
         
@@ -766,7 +766,7 @@ stack.metadata <- function(metadata, metalearner = "nnls", normalize = TRUE, dyn
         
         names( weightsDF_nnls)[2] <- "model.weights"
         
-        result <- structure(list(weights =  weightsDF_nnls,  metalearner = "Elastic", comb.method = "stack"))
+        result <- structure(list(weights =  weightsDF_nnls,  metalearner = "nnls", comb.method = "stack"))
         
         class(result) <- "weight"
         
